@@ -1,0 +1,3 @@
+[submodule "src/tools/cue4extractor/cue4parse"]
+	path = src/tools/cue4extractor/cue4parse
+	url = https://github.com/FabianFG/CUE4Parse
