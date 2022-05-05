@@ -15,8 +15,11 @@ object_types = []
 
 SELECTIVE_OBJECTS = []
 SELECTIVE_UMAP = [
-    # "Bonsai_Art_DefSpawn",
-    # "Bonsai_Art_MidConstruction"
+    # "Bonsai_Art_A",
+    # "Bonsai_Art_AtkPathA",
+    # "Bonsai_Art_AtkPathB",
+    # "Bonsai_Art_AtkSpawn",
+    # "Bonsai_Art_ATower",
 ]
 BLACKLIST = [
     "navmesh",
@@ -349,7 +352,9 @@ def set_material(settings: Settings, mat: bpy.types.Material, mat_data: dict, ov
         "BaseEnv_MAT_V4_Rotating",
         "HorizontalParallax",
         "TileScroll_Mat",
-        "BasaltEnv_MAT"
+        "BasaltEnv_MAT",
+        "BaseEnvEmissive_MAT",
+        "BaseEnv_Unlit_MAT_V4"
     ]
 
     types_blend = [
@@ -391,8 +396,6 @@ def set_material(settings: Settings, mat: bpy.types.Material, mat_data: dict, ov
     mat_types.append(mat_type)
 
     nodes_textures = get_textures(settings=settings, mat=mat, override=override, mat_props=mat_props)
-
-    
 
     blend_mode = BlendMode.OPAQUE
 
