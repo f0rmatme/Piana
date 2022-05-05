@@ -4,6 +4,7 @@ import logging
 from math import radians
 from ...utils.common import setup_logger
 
+logger = setup_logger(__name__)
 
 def clean_scene(debug: bool = False):
 
@@ -237,52 +238,85 @@ def create_node_color(nodes, param_name, rgb, x, y):
     return node
 
 
+def clear_duplicate_node_groups():
+    """
+    Clear the duplicate node groups
+    """
+
+    # --- Search for duplicates in actual node groups
+    node_groups = bpy.data.node_groups
+
+    for group in node_groups:
+        for node in group.nodes:
+            if node.type == 'GROUP':
+                clear_node_group(node)
+
+    # --- Search for duplicates in materials
+    mats = list(bpy.data.materials)
+    worlds = list(bpy.data.worlds)
+
+    for mat in mats + worlds:
+        if mat.use_nodes:
+            for node in mat.node_tree.nodes:
+                if node.type == 'GROUP':
+                    clear_node_group(node)
+
+    for block in bpy.data.node_groups:
+        if ".00" in block.name:
+            bpy.data.node_groups.remove(block)
+
 
 # ANCHOR : Material Controls
 
-def remove_duplicate_mats(logger):
-    """
-    Removes duplicate materials.
-    :return:
-    """
+# def remove_duplicate_mats(logger):
+#     """
+#     Removes duplicate materials.
+#     :return:
+#     """
 
-    obj: bpy.types.Object
-    matSlot: bpy.types.MaterialSlot
+#     obj: bpy.types.Object
+#     matSlot: bpy.types.MaterialSlot
 
 
-    logger.info(f"Material Count :  {len(bpy.data.materials)}")
-    logger.info(f"Image Count :  {len(bpy.data.images)}")
+#     logger.info(f"Material Count :  {len(bpy.data.materials)}")
+#     logger.info(f"Image Count :  {len(bpy.data.images)}")
 
-    for obj in bpy.data.objects:
-        for matSlot in obj.material_slots:
-            if os.path.splitext(matSlot.name)[1]:
-                if os.path.splitext(matSlot.name)[0] in bpy.data.materials:
+#     for obj in bpy.data.objects:
+#         for matSlot in obj.material_slots:
+#             if os.path.splitext(matSlot.name)[1]:
+#                 if os.path.splitext(matSlot.name)[0] in bpy.data.materials:
 
-                    unique_mat = bpy.data.materials[os.path.splitext(matSlot.name)[0]]
-                    matSlot.material = unique_mat
-                    # logger.info(f"Replacing {matSlot.material.name} with {unique_mat.name}")
+#                     unique_mat = bpy.data.materials[os.path.splitext(matSlot.name)[0]]
+#                     matSlot.material = unique_mat
+#                     # logger.info(f"Replacing {matSlot.material.name} with {unique_mat.name}")
 
-    for material in bpy.data.materials:
-        if not material.users:
-            bpy.data.materials.remove(material)
+#     for material in bpy.data.materials:
+#         if not material.users:
+#             bpy.data.materials.remove(material)
 
-    for image in bpy.data.images:
-        if not image.users:
-            bpy.data.images.remove(image)
+#     for image in bpy.data.images:
+#         if not image.users:
+#             bpy.data.images.remove(image)
 
-    logger.info(f"New Material Count :  {len(bpy.data.materials)}")
-    logger.info(f"New Image Count :  {len(bpy.data.images)}")
+#     logger.info(f"New Material Count :  {len(bpy.data.materials)}")
+#     logger.info(f"New Image Count :  {len(bpy.data.images)}")
 
 def remove_master_objects():
     for block in bpy.data.objects:
         if block.hide_viewport == True and block.hide_render == True:
             bpy.data.objects.remove(block)
 
-def eliminate_materials():
+def remove_duplicate_mats():
     # print("\nEliminate Material Duplicates:")
 
     # --- Search for mat. slots in all objects
     mats = bpy.data.materials
+
+    old_mat_count = len(bpy.data.materials)
+    old_img_count = len(bpy.data.images)
+
+    logger.info(f"Material Count :  {len(bpy.data.materials)}")
+    logger.info(f"Image Count :  {len(bpy.data.images)}")
 
     for obj in bpy.data.objects:
         for slot in obj.material_slots:
@@ -295,4 +329,38 @@ def eliminate_materials():
                 if base in mats:
                     # print("  For object '%s' replace '%s' with '%s'" % (obj.name, slot.name, base))
                     slot.material = mats.get(base)
+                    
+                bpy.data.materials.remove(slot.material)
 
+
+    # for material check for texture nodes
+    # if it has a digit check if the original exists
+    # if original has also digits remove
+
+    for mat in bpy.data.materials:
+        if mat.node_tree:
+            for n in mat.node_tree.nodes:
+                if n.type == 'TEX_IMAGE':
+                    if n.image is None:
+                        print(mat.name,'has an image node with no image')
+                    elif n.image.name[-3:].isdigit():
+                        name = n.image.name[:-4]
+                        exists = False
+                        for img in bpy.data.images:
+                            if img.name in name:
+                                exists = True
+                        if exists:
+                            n.image = bpy.data.images[name]
+                        else:
+                            n.image.name = name
+
+    for material in bpy.data.materials:
+        if not material.users:
+            bpy.data.materials.remove(material)
+
+    for image in bpy.data.images:
+        if not image.users:
+            bpy.data.images.remove(image)
+
+    logger.info(f"New Material Count :  {len(bpy.data.materials)}")
+    logger.info(f"New Image Count :  {len(bpy.data.images)}")

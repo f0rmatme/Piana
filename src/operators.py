@@ -3,6 +3,7 @@ import bpy
 from .ui.config import Config
 from .ui.funcs import *
 from .mods.anims import *
+from .mods.liana_main import *
 from .utils.common import setup_logger
 import webbrowser
 
@@ -27,7 +28,8 @@ class ImportMap(bpy.types.Operator):
 
     def execute(self, context):
         yina = context.scene.yina
-        # import_map(yina)
+        kena = context.scene.kena
+        import_map(yina, kena)
 
         return {'FINISHED'}
 
@@ -243,7 +245,7 @@ class PIANA_OT_OpenUModel(bpy.types.Operator):
         sc = context.scene
 
         addon_path = Path(bpy.utils.user_resource('SCRIPTS')).joinpath('addons', __package__)
-        umodel_path = addon_path.joinpath("tools", "umodel.exe").__str__()
+        umodel_path = addon_path.joinpath("tools", "umodel_scaling.exe").__str__()
 
         subprocess.Popen(
             [umodel_path,
@@ -251,6 +253,8 @@ class PIANA_OT_OpenUModel(bpy.types.Operator):
              f"-game=valorant",
              f"-aes=0x4BE71AF2459CF83899EC9DC2CB60E22AC4B3047E0211034BBABE9D174C069DD6"]
         )
+
+        return {'FINISHED'}
 
 
 class PIANA_OT_Donate(bpy.types.Operator):

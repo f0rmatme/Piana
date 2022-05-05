@@ -147,6 +147,9 @@ class VIEW3D_PT_Others(bpy.types.Panel):
         layout.operator("piana.support", icon='FUND', text="Donate", text_ctxt="Donate")
         if kena.paths:
             layout.operator("piana.runumodel", icon='SCRIPT', text="Start UModel")
+            # layout.label(text="Custom UModel")
+            # layout.prop(kena, "exportPath", text="")
+
 
 
 # ANCHOR: Register

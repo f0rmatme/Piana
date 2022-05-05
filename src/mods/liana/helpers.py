@@ -7,6 +7,7 @@ from subprocess import run
 from shutil import rmtree
 from collections.abc import Iterable
 from enum import Enum
+import requests
 
 
 FILEBROWSER_PATH = os.path.join(os.getenv('WINDIR'), 'explorer.exe')
@@ -27,6 +28,7 @@ def open_folder(path):
     if os.path.isdir(path):
         run([FILEBROWSER_PATH, path])
 
+
 def get_files(path: str, extension: str = "") -> list:
     """
     Get all files in a directory
@@ -40,6 +42,7 @@ def get_files(path: str, extension: str = "") -> list:
             files.append(Path(os.path.join(path, file)))
     return files
 
+
 def remove_file(path: str):
     """
     Remove a file
@@ -51,6 +54,7 @@ def remove_file(path: str):
     else:
         raise ValueError("file {} is not a file or dir.".format(path))
 
+
 def open_folder(path):
     """
     Open a file explorer to a path
@@ -61,6 +65,7 @@ def open_folder(path):
 
     if os.path.isdir(path):
         run([FILEBROWSER_PATH, path])
+
 
 def save_list(filepath: Path, lines: list):
     """
@@ -80,6 +85,7 @@ def save_list(filepath: Path, lines: list):
         f.write('\n'.join(lines))
     return filepath.__str__()
 
+
 def save_json(p: str, d):
     """
     Save a dictionary to a json file
@@ -90,6 +96,7 @@ def save_json(p: str, d):
     with open(p, 'w') as jsonfile:
         json.dump(d, jsonfile, indent=4)
 
+
 def read_json(p: str) -> dict:
     """
     Read a json file and return a dictionary
@@ -99,6 +106,7 @@ def read_json(p: str) -> dict:
     with open(p) as json_file:
         return json.load(json_file)
 
+
 def shorten_path(file_path, length) -> str:
     """
     Shorten a path to a given length
@@ -107,6 +115,7 @@ def shorten_path(file_path, length) -> str:
     :return: shortened path
     """
     return f"..\{os.sep.join(file_path.split(os.sep)[-length:])}"
+
 
 def flatten_list(collection):
     """
@@ -121,11 +130,13 @@ def flatten_list(collection):
         else:
             yield x
 
+
 def reset_properties(byo: bpy.types.ObjectModifiers):
     byo.location = [0, 0, 0]
     byo.rotation_euler = [0, 0, 0]
     byo.scale = [1, 1, 1]
     byo.parent = None
+
 
 def create_folders(self):
     for attr, value in self.__dict__.items():
@@ -134,8 +145,6 @@ def create_folders(self):
             if not f.exists():
                 print(f"Creating folder {f}")
                 f.mkdir(parents=True)
-
-
 
 
 # ANCHOR: Classes
@@ -148,22 +157,30 @@ class BlendMode(Enum):
     BLEND = 2
     HASHED = 3
 
+
+def get_umap_list() -> list:
+    a = requests.get("https://gist.githubusercontent.com/luvyana/d5d7b2be0d33f9d213067f06ec681bd8/raw/cd34145908eb2e936065d10f3b9b570c7d5c7353/umaps.json").json()
+    return a
+
+
+
+
 class Settings:
-    def __init__(self, settings):
+    def __init__(self, yina, kena):
 
         self.aes = "0x4BE71AF2459CF83899EC9DC2CB60E22AC4B3047E0211034BBABE9D174C069DD6"
         self.texture_format = ".png"
-        self.script_root = Path(settings.scriptPath)
+        self.script_root = Path(yina.scriptPath).parent
         self.tools_path = self.script_root.joinpath("tools")
         self.importer_assets_path = self.script_root.joinpath("assets")
-        self.game_path = Path(settings.gamePath)
-        self.paks_path = Path(settings.paksPath)
-        self.import_decals = settings.importDecals
-        self.import_lights = settings.importLights
-        self.combine_umaps = settings.combineUmaps
-        self.combine_method = settings.combineMethod
-        self.textures = settings.assetControl
-        self.export_path = Path(settings.exportPath)
+        # self.game_path = Path(settings.gamePath)
+        self.paks_path = Path(kena.paksPath)
+        self.import_decals = yina.importDecals
+        self.import_lights = yina.importLights
+        self.combine_umaps = yina.combineUmaps
+        self.combine_method = yina.combineMethod
+        self.textures = yina.textureControl
+        self.export_path = Path(kena.exportPath)
         self.assets_path = self.export_path.joinpath("export")
         self.maps_path = self.export_path.joinpath("maps")
         self.umodel = self.script_root.joinpath("tools", "umodel.exe")
@@ -171,15 +188,14 @@ class Settings:
         self.log = self.export_path.joinpath("import.log")
         self.umap_list_path = self.importer_assets_path.joinpath("umaps.json")
         self.umap_list = read_json(self.umap_list_path)
+        
 
-        self.selected_map = Map(settings.selectedMap, self.maps_path, self.umap_list)
+        # print(self.script_root.__str__())
 
-
+        self.selected_map = Map(yina.selectedMap, self.maps_path, self.umap_list)
 
         # TODO - Add these to UI?
-        self.debug = True
-
-
+        self.debug = False
 
         self.shaders = [
             "VALORANT_Base",
@@ -197,15 +213,16 @@ class Settings:
 
         create_folders(self)
 
+
 class Map:
     def __init__(self, selected_map_name: str, maps_path: Path, all_umaps: list):
 
-
         self.name = selected_map_name
-        print(maps_path, self.name)
+        # print(maps_path, self.name)
         self.folder_path = maps_path.joinpath(self.name)
-        
+
         self.umaps = all_umaps[self.name]
+        # print(self)
         self.materials_path = self.folder_path.joinpath("materials")
         self.materials_ovr_path = self.folder_path.joinpath("materials_ovr")
         self.objects_path = self.folder_path.joinpath("objects")
