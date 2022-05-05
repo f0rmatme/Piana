@@ -15,10 +15,19 @@ object_types = []
 
 SELECTIVE_OBJECTS = []
 SELECTIVE_UMAP = [
-    # "Bonsai_Art_AtkSpawn",
+    # "Bonsai_Art_DefSpawn",
     # "Bonsai_Art_MidConstruction"
 ]
-BLACKLIST = []
+BLACKLIST = [
+    "navmesh",
+    "_breakable",
+    "_collision",
+    "WindStreaks_Plane",
+    "SM_Port_Snowflakes_BoundMesh",
+    "sm_barrierduality",
+    "box_for_volumes"
+]
+
 COUNT = 0
 
 
@@ -40,6 +49,7 @@ PROPS = {
 }
 object_types = []
 stdout = StringIO()
+
 
 def extract_assets(settings: Settings):
     pass
@@ -382,7 +392,7 @@ def set_material(settings: Settings, mat: bpy.types.Material, mat_data: dict, ov
 
     nodes_textures = get_textures(settings=settings, mat=mat, override=override, mat_props=mat_props)
 
-    mat.use_screen_refraction = True
+    
 
     blend_mode = BlendMode.OPAQUE
 
@@ -430,6 +440,7 @@ def set_material(settings: Settings, mat: bpy.types.Material, mat_data: dict, ov
         N_SHADER.inputs["Roughness"].default_value = 0.2
         N_SHADER.inputs["Specular"].default_value = 0.2
         link(N_SHADER.outputs["BSDF"], N_OUTPUT.inputs["Surface"])
+        mat.use_screen_refraction = True
 
     elif mat_type in types_emissive:
         N_SHADER.node_tree = get_valorant_shader(group_name="VALORANT_Base")
@@ -1029,19 +1040,20 @@ def import_umap(settings: Settings, umap_data: dict, umap_name: str):
 
     if not settings.debug:
         with redirect_stdout(stdout):
-            
+
             if settings.textures == "pack":
                 bpy.ops.file.pack_all()
-                
+
             if settings.textures == "local":
                 bpy.ops.file.pack_all()
                 bpy.ops.file.unpack_all(method='WRITE_LOCAL')
                 bpy.ops.file.make_paths_relative()
                 logger.info(f"Extracted : {umap_name}'s textures to {shorten_path(settings.selected_map.scenes_path.joinpath('textures').__str__(), 4)}")
-            
+
             map_path = settings.selected_map.scenes_path.joinpath(umap_name).__str__()
             bpy.ops.wm.save_as_mainfile(filepath=map_path + ".blend", compress=True)
             logger.info(f"Saved : {umap_name}.blend to {shorten_path(map_path.__str__(), 4)}")
+
 
 def import_object(map_object: MapObject, target_collection: bpy.types.Collection, object_index: int, scene: bpy.types.Scene):
 
@@ -1131,12 +1143,10 @@ def combine_umaps(settings: Settings):
     # a = SELECTIVE_UMAP or settings.selected_map.umaps
     # print(settings.selected_map)
 
-    
     for umap in settings.selected_map.umaps:
         umap_name = os.path.splitext(os.path.basename(umap))[0]
         umap_blend_file = settings.selected_map.scenes_path.joinpath(umap_name).__str__() + ".blend"
 
-        
         # logger.info(settings.combine_method)
         sec = "\\Collection\\"
         obj = umap_name
@@ -1150,7 +1160,6 @@ def combine_umaps(settings: Settings):
                 bpy.ops.wm.append(filepath=fp, filename=obj, directory=dr)
             if settings.combine_method == "link":
                 bpy.ops.wm.link(filepath=fp, filename=obj, directory=dr)
-
 
 
 def post_setup(settings: Settings):
@@ -1178,11 +1187,8 @@ def post_setup(settings: Settings):
                 bpy.ops.file.unpack_all(method='WRITE_LOCAL')
                 logger.info("Unpacked local textures")
 
-
             bpy.ops.wm.save_as_mainfile(filepath=map_path + ".blend", compress=True)
             logger.info(f"Saved Combined : '{settings.selected_map.name.capitalize()}.blend' to {shorten_path(map_path, 4)}")
-
-
 
 
 # ANCHOR MAIN FUNCTION
@@ -1200,7 +1206,7 @@ def import_map(yina, kena):
 
     settings = Settings(yina, kena)
     # if SELECTIVE_UMAP:
-    
+
     # logger = setup_logger(settings.log)
 
     #  Check if the game files are exported
@@ -1259,5 +1265,3 @@ def import_map(yina, kena):
         # open_folder(settings.selected_map.scenes_path.__str__())
 
     logger.info("Finished!")
-
-
