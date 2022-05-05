@@ -1029,21 +1029,19 @@ def import_umap(settings: Settings, umap_data: dict, umap_name: str):
 
     if not settings.debug:
         with redirect_stdout(stdout):
-            if settings.textures == "Pack":
+            
+            if settings.textures == "pack":
                 bpy.ops.file.pack_all()
-
-                # logger.info(f"Exporting {umap_name} to {SELECTED_MAP_BLENDS_FOLDER}")
-            # print("AAAAAAAAAAA")
-            map_path = settings.selected_map.scenes_path.joinpath(umap_name).__str__()
-            bpy.ops.wm.save_as_mainfile(filepath=map_path + ".blend", compress=True)
-            logger.info(f"Saved : {umap_name}.blend to {shorten_path(map_path.__str__(), 4)}")
-
-            if settings.textures == "Local":
+                
+            if settings.textures == "local":
                 bpy.ops.file.pack_all()
                 bpy.ops.file.unpack_all(method='WRITE_LOCAL')
                 bpy.ops.file.make_paths_relative()
-                logger.info(f"Extracted : {umap_name}'s textures to {shorten_path(settings.selected_map.scenes_path.joinpath('textures'), 4)}")
-
+                logger.info(f"Extracted : {umap_name}'s textures to {shorten_path(settings.selected_map.scenes_path.joinpath('textures').__str__(), 4)}")
+            
+            map_path = settings.selected_map.scenes_path.joinpath(umap_name).__str__()
+            bpy.ops.wm.save_as_mainfile(filepath=map_path + ".blend", compress=True)
+            logger.info(f"Saved : {umap_name}.blend to {shorten_path(map_path.__str__(), 4)}")
 
 def import_object(map_object: MapObject, target_collection: bpy.types.Collection, object_index: int, scene: bpy.types.Scene):
 
@@ -1174,9 +1172,9 @@ def post_setup(settings: Settings):
             clear_duplicate_node_groups()
 
             # ! Utility to pack
-            if settings.textures == "Pack":
+            if settings.textures == "pack":
                 bpy.ops.file.pack_all()
-            if settings.textures == "Local":
+            if settings.textures == "local":
                 bpy.ops.file.unpack_all(method='WRITE_LOCAL')
                 logger.info("Unpacked local textures")
 
