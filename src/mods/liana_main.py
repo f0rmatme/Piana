@@ -16,7 +16,7 @@ object_types = []
 SELECTIVE_OBJECTS = []
 SELECTIVE_UMAP = [
     # "Bonsai_Art_AtkSpawn",
-    # "Bonsai_Art_ATower"
+    # "Bonsai_Art_MidConstruction"
 ]
 BLACKLIST = []
 COUNT = 0

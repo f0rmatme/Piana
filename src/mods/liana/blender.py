@@ -97,37 +97,37 @@ def duplicate(obj, data=True):
     return obj_copy
 
 
-def remove_duplicate_mats(logger):
-    """
-    Removes duplicate materials.
-    :return:
-    """
+# def remove_duplicate_mats(logger):
+#     """
+#     Removes duplicate materials.
+#     :return:
+#     """
 
-    obj: bpy.types.Object
-    matSlot: bpy.types.MaterialSlot
+#     obj: bpy.types.Object
+#     matSlot: bpy.types.MaterialSlot
 
-    logger.info(f"Material Count :  {len(bpy.data.materials)}")
-    logger.info(f"Image Count :  {len(bpy.data.images)}")
+#     logger.info(f"Material Count :  {len(bpy.data.materials)}")
+#     logger.info(f"Image Count :  {len(bpy.data.images)}")
 
-    for obj in bpy.data.objects:
-        for matSlot in obj.material_slots:
-            if os.path.splitext(matSlot.name)[1]:
-                if os.path.splitext(matSlot.name)[0] in bpy.data.materials:
+#     for obj in bpy.data.objects:
+#         for matSlot in obj.material_slots:
+#             if os.path.splitext(matSlot.name)[1]:
+#                 if os.path.splitext(matSlot.name)[0] in bpy.data.materials:
 
-                    unique_mat = bpy.data.materials[os.path.splitext(matSlot.name)[0]]
-                    matSlot.material = unique_mat
-                    # logger.info(f"Replacing {matSlot.material.name} with {unique_mat.name}")
+#                     unique_mat = bpy.data.materials[os.path.splitext(matSlot.name)[0]]
+#                     matSlot.material = unique_mat
+#                     # logger.info(f"Replacing {matSlot.material.name} with {unique_mat.name}")
 
-    for material in bpy.data.materials:
-        if not material.users:
-            bpy.data.materials.remove(material)
+#     for material in bpy.data.materials:
+#         if not material.users:
+#             bpy.data.materials.remove(material)
 
-    for image in bpy.data.images:
-        if not image.users:
-            bpy.data.images.remove(image)
+#     for image in bpy.data.images:
+#         if not image.users:
+#             bpy.data.images.remove(image)
 
-    logger.info(f"New Material Count :  {len(bpy.data.materials)}")
-    logger.info(f"New Image Count :  {len(bpy.data.images)}")
+#     logger.info(f"New Material Count :  {len(bpy.data.materials)}")
+#     logger.info(f"New Image Count :  {len(bpy.data.images)}")
 
 
 def remove_master_objects():
@@ -330,7 +330,8 @@ def remove_duplicate_mats():
                     # print("  For object '%s' replace '%s' with '%s'" % (obj.name, slot.name, base))
                     slot.material = mats.get(base)
                     
-                bpy.data.materials.remove(slot.material)
+                if not slot.material.users:
+                    bpy.data.materials.remove(slot.material)
 
 
     # for material check for texture nodes
