@@ -6,7 +6,7 @@ from .mods.anims import *
 from .mods.liana_main import *
 from .utils.common import setup_logger
 import webbrowser
-
+import time
 
 import subprocess
 
@@ -29,8 +29,10 @@ class ImportMap(bpy.types.Operator):
     def execute(self, context):
         yina = context.scene.yina
         kena = context.scene.kena
+        start = time.perf_counter()
         import_map(yina, kena)
-
+        end = time.perf_counter()
+        logger.info(f"Import time:{end-start}")
         return {'FINISHED'}
 
 
