@@ -25,8 +25,6 @@ def remove(path: str):
 
 def main():
 
-    # Build extractor
-
     cwd = Path(os.getcwd())
     build_folder = Path(os.path.join(os.path.dirname(__file__), addon_name))
     src_folder = Path(os.path.join(os.path.dirname(__file__), "src"))
@@ -66,11 +64,8 @@ def main():
     shutil.make_archive(
         base_name=addon_filename,
         format="zip",
-        # root_dir=build_folder.__str__(),
         root_dir=cwd.__str__(),
         base_dir=addon_name,
-
-        # verbose=True
     )
 
 
