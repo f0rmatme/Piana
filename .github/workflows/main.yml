@@ -1,5 +1,8 @@
 name: 'Build & Release Piana'
-on: push
+on:
+  push:
+    paths:
+      - 'src/**'
 
 permissions:
   contents: write

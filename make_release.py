@@ -30,7 +30,8 @@ def main():
     src_folder = Path(os.path.join(os.path.dirname(__file__), "src"))
     
 
-    # Build extractor
+    # TODO : Make this work in Github Actions
+    # Build cue4extractor
     # subprocess.call([
     #     "dotnet",
     #     "publish",
@@ -58,8 +59,8 @@ def main():
     shutil.copytree(src_folder, build_folder, dirs_exist_ok=True)
 
     # Remove unwanted files
-    # remove(os.path.join(build_folder, "tools", "cue4extractor"))
-
+    remove(os.path.join(build_folder, "tools", "cue4extractor"))
+    remove(os.path.join(build_folder, ".vscode"))
 
     shutil.make_archive(
         base_name=addon_filename,
