@@ -3,16 +3,15 @@ import os
 import pathlib
 from pathlib import Path
 from shutil import rmtree
-import glob
-import subprocess
+import sys
 
 
 addon_name = "Piana"
-addon_version = "0.0.1"
+addon_version = sys.argv[1]
 addon_filename = addon_name + "-" + addon_version
 
 
-def remove_file(path: str):
+def remove(path: str):
     """
     Remove a file
     """
@@ -34,23 +33,23 @@ def main():
     
 
     # Build extractor
-    subprocess.call([
-        "dotnet",
-        "publish",
-        "./src/tools/cue4extractor",
-        "-c", "Release",
-        "--no-self-contained",
-        "-r", "win-x64",
-        "-f", "net6.0",
-        "-o", "./src/tools/",
-        "-p:PublishSingleFile=true",
-        "-p:PublishSingleFile=true",
-        "-p:DebugType=None",
-        "-p:GenerateDocumentationFile=false",
-        "-p:DebugSymbols=false",
-        "-p:AssemblyVersion=4.0.2.0",
-        "-p:FileVersion=4.0.2.0"
-    ])
+    # subprocess.call([
+    #     "dotnet",
+    #     "publish",
+    #     "./src/tools/cue4extractor",
+    #     "-c", "Release",
+    #     "--no-self-contained",
+    #     "-r", "win-x64",
+    #     "-f", "net6.0",
+    #     "-o", "./src/tools/",
+    #     "-p:PublishSingleFile=true",
+    #     "-p:PublishSingleFile=true",
+    #     "-p:DebugType=None",
+    #     "-p:GenerateDocumentationFile=false",
+    #     "-p:DebugSymbols=false",
+    #     "-p:AssemblyVersion=4.0.2.0",
+    #     "-p:FileVersion=4.0.2.0"
+    # ])
 
     [p.unlink() for p in pathlib.Path('.').rglob('*.py[co]')]
     [p.rmdir() for p in pathlib.Path('.').rglob('__pycache__')]
@@ -61,10 +60,7 @@ def main():
     shutil.copytree(src_folder, build_folder, dirs_exist_ok=True)
 
     # Remove unwanted files
-    remove_file(os.path.join(build_folder, "tools", "cue4extractor"))
-
-
-
+    # remove(os.path.join(build_folder, "tools", "cue4extractor"))
 
 
     shutil.make_archive(

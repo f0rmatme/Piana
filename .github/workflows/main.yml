@@ -1,0 +1,50 @@
+name: 'Build & Release Piana'
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  release-content:
+    name: 'Create GitHub Release'
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - uses: paulhatch/semantic-version@v4.0.2
+        id: versioning
+        with:
+          # The prefix to use to identify tags
+          tag_prefix: "v"
+          # A string which, if present in a git commit, indicates that a change represents a
+          # major (breaking) change, supports regular expressions wrapped with '/'
+          major_pattern: "(MAJOR)"
+          # Same as above except indicating a minor change, supports regular expressions wrapped with '/'
+          minor_pattern: "(MINOR)"
+          # A string to determine the format of the version output
+          format: "${major}.${minor}.${patch}"
+          # If this is set to true, *every* commit will be treated as a new version.
+          bump_each_commit: false
+
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - run: python make_release.py ${{ steps.versioning.outputs.version }}
+
+      - name: 'Create GitHub Release'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./Piana-${{ steps.versioning.outputs.version }}.zip
+          tag_name: v${{ steps.versioning.outputs.version }}
+          name: v${{ steps.versioning.outputs.version }}
+          prerelease: false
