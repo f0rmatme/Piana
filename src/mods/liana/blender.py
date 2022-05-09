@@ -326,9 +326,12 @@ def remove_duplicate_mats():
 
             # Replace the numbered duplicate with the original if found
             if ext.isnumeric():
-                if base in mats:
-                    # print("  For object '%s' replace '%s' with '%s'" % (obj.name, slot.name, base))
+                mat = mats.get(base)
+                if mat is not None:
                     slot.material = mats.get(base)
+                # if base in mats:
+                #     # print("  For object '%s' replace '%s' with '%s'" % (obj.name, slot.name, base))
+                #     slot.material = mats.get(base)
                     
                 if not slot.material.users:
                     bpy.data.materials.remove(slot.material)
@@ -346,12 +349,17 @@ def remove_duplicate_mats():
                         print(mat.name,'has an image node with no image')
                     elif n.image.name[-3:].isdigit():
                         name = n.image.name[:-4]
-                        exists = False
-                        for img in bpy.data.images:
-                            if img.name in name:
-                                exists = True
-                        if exists:
-                            n.image = bpy.data.images[name]
+                        # exists = False
+                        # for img in bpy.data.images:
+                        #     if img.name in name:
+                        #         exists = True
+                        # if exists:
+                        #     n.image = bpy.data.images[name]
+                        # else:
+                        #     n.image.name = name
+                        img = bpy.data.images.get(name)
+                        if img is not None:
+                            n.image = img
                         else:
                             n.image.name = name
 
@@ -405,11 +413,16 @@ def clean_materials():
                     elif n.image.name[-3:].isdigit():
                         name = n.image.name[:-4]
                         exists = False
-                        for img in bpy.data.images:
-                            if img.name in name:
-                                exists = True
-                        if exists:
-                            n.image = bpy.data.images[name]
+                        # for img in bpy.data.images:
+                        #     if img.name in name:
+                        #         exists = True
+                        # if exists:
+                        #     n.image = bpy.data.images[name]
+                        # else:
+                        #     n.image.name = name
+                        img = bpy.data.images.get(name)
+                        if img is not None:
+                            n.image = img
                         else:
                             n.image.name = name
 
