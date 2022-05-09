@@ -365,3 +365,61 @@ def remove_duplicate_mats():
 
     logger.info(f"New Material Count :  {len(bpy.data.materials)}")
     logger.info(f"New Image Count :  {len(bpy.data.images)}")
+
+def clean_materials():
+    mats = bpy.data.materials
+
+    old_mat_count = len(bpy.data.materials)
+    old_img_count = len(bpy.data.images)
+
+    logger.info(f"Material Count :  {len(bpy.data.materials)}")
+    logger.info(f"Image Count :  {len(bpy.data.images)}")
+
+    # This part is not necessary every time when importing one umap
+    # for obj in bpy.data.objects:
+    #     for slot in obj.material_slots:
+
+    #         # Get the material name as 3-tuple (base, separator, extension)
+    #         (base, sep, ext) = slot.name.rpartition('.')
+
+    #         # Replace the numbered duplicate with the original if found
+    #         if ext.isnumeric():
+    #             if base in mats:
+    #                 # print("  For object '%s' replace '%s' with '%s'" % (obj.name, slot.name, base))
+    #                 slot.material = mats.get(base)
+                    
+    #             if not slot.material.users:
+    #                 bpy.data.materials.remove(slot.material)
+
+
+    # for material check for texture nodes
+    # if it has a digit check if the original exists
+    # if original has also digits remove
+
+    for mat in bpy.data.materials:
+        if mat.node_tree:
+            for n in mat.node_tree.nodes:
+                if n.type == 'TEX_IMAGE':
+                    if n.image is None:
+                        print(mat.name,'has an image node with no image')
+                    elif n.image.name[-3:].isdigit():
+                        name = n.image.name[:-4]
+                        exists = False
+                        for img in bpy.data.images:
+                            if img.name in name:
+                                exists = True
+                        if exists:
+                            n.image = bpy.data.images[name]
+                        else:
+                            n.image.name = name
+
+    for material in bpy.data.materials:
+        if not material.users:
+            bpy.data.materials.remove(material)
+
+    for image in bpy.data.images:
+        if not image.users:
+            bpy.data.images.remove(image)
+
+    logger.info(f"New Material Count :  {len(bpy.data.materials)}")
+    logger.info(f"New Image Count :  {len(bpy.data.images)}")

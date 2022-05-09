@@ -1209,7 +1209,7 @@ def post_setup(settings: Settings):
             combine_umaps(settings=settings)
 
             # eliminate_materials()
-            # remove_duplicate_mats()
+            remove_duplicate_mats()
             clear_duplicate_node_groups()
 
             # ! Utility to pack
@@ -1270,7 +1270,7 @@ def import_map(yina, kena):
 
         import_umap(settings=settings, umap_data=umap_data, umap_name=umap_name)
         remove_master_objects()
-        # remove_duplicate_mats()
+        clean_materials() # remove_duplicate_mats() 
         clear_duplicate_node_groups()
 
         # if not settings.debug:
