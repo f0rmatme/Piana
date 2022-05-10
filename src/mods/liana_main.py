@@ -125,13 +125,13 @@ def get_object(map_object, index, link, scene_unlink) -> bpy.types.Object:
     if not master_object:
         logger.info(f"[{index}] | Importing : {shorten_path(map_object.model_path, 4)} - {map_object.uname}")
         with redirect_stdout(stdout):
-            xay(map_object.model_path)
-        master_object = bpy.context.active_object
+            master_object = xay(map_object.model_path)
+        # master_object = bpy.context.active_object
         master_object.name = map_object.uname
 
     try:
         link(master_object)
-        scene_unlink(master_object)
+        # scene_unlink(master_object)
     except:
         pass
 

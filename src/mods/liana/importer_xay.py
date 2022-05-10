@@ -120,8 +120,8 @@ def xay(xay_path: str) -> bool:
         mesh.create_normals_split()
         mesh.normals_split_custom_set_from_vertices(normals)
         mesh.use_auto_smooth = True
-        bpy.data.scenes[0].collection.objects.link(obj)
+        # bpy.data.scenes[0].collection.objects.link(obj)
 
-        bpy.context.view_layer.objects.active = obj
+        # bpy.context.view_layer.objects.active = obj
 
-        return True
+        return obj
