@@ -15,11 +15,11 @@ object_types = []
 
 SELECTIVE_OBJECTS = []
 SELECTIVE_UMAP = [
-    "Bonsai_Art_A",
-    "Bonsai_Art_AtkPathA",
-    "Bonsai_Art_AtkPathB",
-    "Bonsai_Art_AtkSpawn",
-    "Bonsai_Art_ATower",
+    # "Bonsai_Art_A",
+    # "Bonsai_Art_AtkPathA",
+    # "Bonsai_Art_AtkPathB",
+    # "Bonsai_Art_AtkSpawn",
+    # "Bonsai_Art_ATower",
 ]
 BLACKLIST = [
     "navmesh",
@@ -1131,12 +1131,13 @@ def import_object(map_object: MapObject, target_collection: bpy.types.Collection
 
             instance_data = map_object.data["PerInstanceSMData"]
 
-            bpy.ops.object.empty_add(type='PLAIN_AXES')
-            instance_group = bpy.context.active_object
-            instance_group.name = map_object.name + "-GRP"
+            # bpy.ops.object.empty_add(type='PLAIN_AXES')
+            # instance_group = bpy.context.active_object
+            instance_group=bpy.data.objects.new(map_object.name + "-GRP", None)
+            # instance_group.name = map_object.name + "-GRP"
 
             link(instance_group)
-            scene_unlink(instance_group)
+            # scene_unlink(instance_group)
 
             master_object.parent = instance_group
 
