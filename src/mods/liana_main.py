@@ -978,7 +978,7 @@ def import_umap(settings: Settings, umap_data: dict, umap_name: str):
         lights_collection = bpy.data.collections.new(umap_name + "_lights")
         import_collection.children.link(lights_collection)
 
-    import_collection.children.link(objects_collection)
+    # import_collection.children.link(objects_collection)
 
     if COUNT != 0:
         objectsToImport = objectsToImport[:COUNT]
@@ -1059,6 +1059,8 @@ def import_umap(settings: Settings, umap_data: dict, umap_name: str):
                         light_object.data.spot_size = prop_value * 0.01
 
                 set_properties(byo=light_object, object=light_props, is_light=True)
+
+    import_collection.children.link(objects_collection)
 
     if settings.import_decals:
         if len(decals_collection.objects) <= 0:
