@@ -15,11 +15,11 @@ object_types = []
 
 SELECTIVE_OBJECTS = []
 SELECTIVE_UMAP = [
-    # "Bonsai_Art_A",
-    # "Bonsai_Art_AtkPathA",
-    # "Bonsai_Art_AtkPathB",
-    # "Bonsai_Art_AtkSpawn",
-    # "Bonsai_Art_ATower",
+    "Bonsai_Art_A",
+    "Bonsai_Art_AtkPathA",
+    "Bonsai_Art_AtkPathB",
+    "Bonsai_Art_AtkSpawn",
+    "Bonsai_Art_ATower",
 ]
 BLACKLIST = [
     "navmesh",
@@ -236,10 +236,24 @@ def set_materials(settings: Settings, byo: bpy.types.Object, map_object: MapObje
                     if "WorldGridMaterial" not in mat_name:
                         mat_json = read_json(settings.selected_map.materials_path.joinpath(f"{mat_name}.json"))
                         try:
-                            byoMAT = bpy.data.materials.new(name=mat_name)
-                            byo.material_slots[index].material = byoMAT
-                            set_material(settings=settings, mat=byoMAT, mat_data=mat_json[0], object_cls=map_object, object_byo=byo)
+                            obj_data = byo.data
+                            mat_data = mat_json[0]
 
+                            if obj_data.vertex_colors:
+                                mat_name = mat_data["Name"] + "_V"
+                            else:
+                                mat_name = mat_data["Name"] + "_NV"
+
+                            byoMAT = bpy.data.materials.get(mat_name)
+                            if byoMAT is None:
+                                byoMAT = bpy.data.materials.new(name=mat_name)
+                                set_material(
+                                    settings=settings, mat=byoMAT, mat_data=mat_json[0], object_cls=map_object, object_byo=byo)
+
+                            byo.material_slots[index].material = byoMAT
+                            # byoMAT = bpy.data.materials.new(name=mat_name)
+                            # byo.material_slots[index].material = byoMAT
+                            # set_material(settings=settings, mat=byoMAT, mat_data=mat_json[0], object_cls=map_object, object_byo=byo)
                         except IndexError:
                             pass
 
@@ -249,10 +263,25 @@ def set_materials(settings: Settings, byo: bpy.types.Object, map_object: MapObje
                     mat_name = get_object_name(data=mat, mat=True)
                     mat_json = read_json(settings.selected_map.materials_ovr_path.joinpath(f"{mat_name}.json"))
                     try:
-                        byoMAT = bpy.data.materials.new(name=mat_name)
+                        obj_data = byo.data
+                        mat_data = mat_json[0]
+
+                        if obj_data.vertex_colors:
+                            mat_name = mat_data["Name"] + "_V"
+                        else:
+                            mat_name = mat_data["Name"] + "_NV"
+
+                        byoMAT = bpy.data.materials.get(mat_name)
+                        if byoMAT is None:
+                            byoMAT = bpy.data.materials.new(name=mat_name)
+                            set_material(
+                                settings=settings, mat=byoMAT, mat_data=mat_json[0], object_cls=map_object, object_byo=byo)
+
                         byo.material_slots[index].material = byoMAT
-                        if byoMAT is not None:
-                            set_material(settings=settings, mat=byoMAT, mat_data=mat_json[0], override=True, object_cls=map_object, object_byo=byo)
+                        # byoMAT = bpy.data.materials.new(name=mat_name)
+                        # byo.material_slots[index].material = byoMAT
+                        # if byoMAT is not None:
+                        #     set_material(settings=settings, mat=byoMAT, mat_data=mat_json[0], override=True, object_cls=map_object, object_byo=byo)
                     except IndexError:
                         pass
 
@@ -270,10 +299,10 @@ def set_material(settings: Settings, mat: bpy.types.Material, mat_data: dict, ov
 
     obj_data = object_byo.data
 
-    if obj_data.vertex_colors:
-        mat.name = mat_data["Name"] + "_V"
-    else:
-        mat.name = mat_data["Name"] + "_NV"
+    # if obj_data.vertex_colors:
+    #     mat.name = mat_data["Name"] + "_V"
+    # else:
+    #     mat.name = mat_data["Name"] + "_NV"
 
     if "Properties" not in mat_data:
         return
@@ -1241,7 +1270,7 @@ def import_map(yina, kena):
 
         import_umap(settings=settings, umap_data=umap_data, umap_name=umap_name)
         remove_master_objects()
-        remove_duplicate_mats()
+        clean_materials() # remove_duplicate_mats() 
         clear_duplicate_node_groups()
 
         # if not settings.debug:
