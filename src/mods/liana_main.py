@@ -15,11 +15,11 @@ object_types = []
 
 SELECTIVE_OBJECTS = []
 SELECTIVE_UMAP = [
-    "Bonsai_Art_A",
-    "Bonsai_Art_AtkPathA",
-    "Bonsai_Art_AtkPathB",
-    "Bonsai_Art_AtkSpawn",
-    "Bonsai_Art_ATower",
+    # "Bonsai_Art_A",
+    # "Bonsai_Art_AtkPathA",
+    # "Bonsai_Art_AtkPathB",
+    # "Bonsai_Art_AtkSpawn",
+    # "Bonsai_Art_ATower",
 ]
 BLACKLIST = [
     "navmesh",
