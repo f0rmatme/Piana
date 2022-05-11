@@ -426,9 +426,9 @@ def clean_materials():
                         else:
                             n.image.name = name
 
-    for material in bpy.data.materials:
-        if not material.users:
-            bpy.data.materials.remove(material)
+    # for material in bpy.data.materials:
+    #     if not material.users:
+    #         bpy.data.materials.remove(material)
 
     for image in bpy.data.images:
         if not image.users:

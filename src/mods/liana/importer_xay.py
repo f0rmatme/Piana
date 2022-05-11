@@ -49,7 +49,6 @@ def xay(xay_path: str) -> bool:
             # null terminated string, so yea, lol
             sec_name, sec_first_idx = struct.unpack(f'<{str_len-1}sxI', f.read(str_len+4))
             materials.append((str(sec_name, 'utf8'), sec_first_idx))
-        
         positions = []
         normals = []
         uvs = [[]]
@@ -98,8 +97,11 @@ def xay(xay_path: str) -> bool:
         
         # creating and appending mats to mesh
         for material in materials:
-            mat = bpy.data.materials.new(material[0])
-            mesh.materials.append(mat)
+            # mat = bpy.data.materials.new(material[0])
+            # mesh.materials.append(mat)
+
+            # create only material slots instead of assigning actual material data
+            mesh.materials.append(None)
         
         # setting mats
         for mat_idx in range(len(materials) - 1):
