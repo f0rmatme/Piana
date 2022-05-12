@@ -807,6 +807,13 @@ def get_scalar_value(mat_props, s_param_name):
 # NOTE: Might be tuned bit more
 
 
+def get_image(tex_name, tex_local_path):
+    img = bpy.data.images.get(tex_name + ".png")
+    if img is None:
+        img = bpy.data.images.load(tex_local_path)
+    return img
+
+
 def get_textures(settings: Settings, mat: bpy.types.Material, override: bool, mat_props: dict):
     blacklist_tex = [
         "Albedo_DF",
@@ -839,7 +846,7 @@ def get_textures(settings: Settings, mat: bpy.types.Material, override: bool, ma
                     index += 1
                     tex_image_node: bpy.types.Node
                     tex_image_node = mat.node_tree.nodes.new('ShaderNodeTexImage')
-                    tex_image_node.image = bpy.data.images.load(tex_local_path)
+                    tex_image_node.image = get_image(tex_name, tex_local_path)  # bpy.data.images.load(tex_local_path)
                     tex_image_node.image.alpha_mode = "CHANNEL_PACKED"
                     tex_image_node.label = param["ParameterInfo"]["Name"]
                     tex_image_node.location[0] = pos[0]
@@ -892,7 +899,7 @@ def get_textures(settings: Settings, mat: bpy.types.Material, override: bool, ma
                         pos[1] = i * -270
                         i += 1
                         tex_image_node = mat.node_tree.nodes.new('ShaderNodeTexImage')
-                        tex_image_node.image = bpy.data.images.load(tex_local_path)
+                        tex_image_node.image = get_image(Path(tex_local_path).stem, tex_local_path)  # bpy.data.images.load(tex_local_path)
                         tex_image_node.image.alpha_mode = "CHANNEL_PACKED"
                         tex_image_node.label = texture_name_raw
                         tex_image_node.location = [pos[0], pos[1]]
@@ -1273,7 +1280,7 @@ def import_map(yina, kena):
 
         import_umap(settings=settings, umap_data=umap_data, umap_name=umap_name)
         remove_master_objects()
-        clean_materials() # remove_duplicate_mats() 
+        # clean_materials() # remove_duplicate_mats() 
         clear_duplicate_node_groups()
 
         # if not settings.debug:
