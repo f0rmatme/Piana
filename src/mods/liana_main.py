@@ -101,20 +101,26 @@ def extract_data(settings: Settings, export_directory: str, asset_list_txt: str 
 
 
 def search_object(map_object, index, link) -> bpy.types.Object:
+    obj = bpy.data.objects.get(map_object.name)
+    if obj:
+        logger.info(f"[{index}] | Duplicate : {shorten_path(map_object.model_path, 4)} - {map_object.uname}")
+        master_object = obj.copy()# duplicate(obj, data=False)
+        master_object.name = map_object.uname
+        reset_properties(master_object)
+        return master_object
+    # for source_object in bpy.data.objects:
+    #     a = source_object.name.rpartition('_')
+    #     # print(a)
+    #     if map_object.name in source_object.type == "MESH":
+    #         logger.info(f"[{index}] | Duplicate : {shorten_path(map_object.model_path, 4)} - {map_object.uname}")
 
-    for source_object in bpy.data.objects:
-        a = source_object.name.rpartition('_')
-        # print(a)
-        if map_object.name in source_object.type == "MESH":
-            logger.info(f"[{index}] | Duplicate : {shorten_path(map_object.model_path, 4)} - {map_object.uname}")
+    #         master_object = duplicate(source_object, data=False)
+    #         master_object.name = map_object.uname
+    #         # master_object.data.materials.clear()
 
-            master_object = duplicate(source_object, data=False)
-            master_object.name = map_object.uname
-            # master_object.data.materials.clear()
-
-            link(master_object)
-            reset_properties(master_object)
-            return master_object
+    #         link(master_object)
+    #         reset_properties(master_object)
+    #         return master_object
     return False
 
 
@@ -125,13 +131,13 @@ def get_object(map_object, index, link, scene_unlink) -> bpy.types.Object:
     if not master_object:
         logger.info(f"[{index}] | Importing : {shorten_path(map_object.model_path, 4)} - {map_object.uname}")
         with redirect_stdout(stdout):
-            xay(map_object.model_path)
-        master_object = bpy.context.active_object
+            master_object = xay(map_object.model_path)
+        # master_object = bpy.context.active_object
         master_object.name = map_object.uname
 
     try:
         link(master_object)
-        scene_unlink(master_object)
+        # scene_unlink(master_object)
     except:
         pass
 
@@ -807,6 +813,13 @@ def get_scalar_value(mat_props, s_param_name):
 # NOTE: Might be tuned bit more
 
 
+def get_image(tex_name, tex_local_path):
+    img = bpy.data.images.get(tex_name + ".png")
+    if img is None:
+        img = bpy.data.images.load(tex_local_path)
+    return img
+
+
 def get_textures(settings: Settings, mat: bpy.types.Material, override: bool, mat_props: dict):
     blacklist_tex = [
         "Albedo_DF",
@@ -839,7 +852,7 @@ def get_textures(settings: Settings, mat: bpy.types.Material, override: bool, ma
                     index += 1
                     tex_image_node: bpy.types.Node
                     tex_image_node = mat.node_tree.nodes.new('ShaderNodeTexImage')
-                    tex_image_node.image = bpy.data.images.load(tex_local_path)
+                    tex_image_node.image = get_image(tex_name, tex_local_path)  # bpy.data.images.load(tex_local_path)
                     tex_image_node.image.alpha_mode = "CHANNEL_PACKED"
                     tex_image_node.label = param["ParameterInfo"]["Name"]
                     tex_image_node.location[0] = pos[0]
@@ -892,7 +905,7 @@ def get_textures(settings: Settings, mat: bpy.types.Material, override: bool, ma
                         pos[1] = i * -270
                         i += 1
                         tex_image_node = mat.node_tree.nodes.new('ShaderNodeTexImage')
-                        tex_image_node.image = bpy.data.images.load(tex_local_path)
+                        tex_image_node.image = get_image(Path(tex_local_path).stem, tex_local_path)  # bpy.data.images.load(tex_local_path)
                         tex_image_node.image.alpha_mode = "CHANNEL_PACKED"
                         tex_image_node.label = texture_name_raw
                         tex_image_node.location = [pos[0], pos[1]]
@@ -978,7 +991,7 @@ def import_umap(settings: Settings, umap_data: dict, umap_name: str):
         lights_collection = bpy.data.collections.new(umap_name + "_lights")
         import_collection.children.link(lights_collection)
 
-    import_collection.children.link(objects_collection)
+    # import_collection.children.link(objects_collection)
 
     if COUNT != 0:
         objectsToImport = objectsToImport[:COUNT]
@@ -1060,6 +1073,8 @@ def import_umap(settings: Settings, umap_data: dict, umap_name: str):
 
                 set_properties(byo=light_object, object=light_props, is_light=True)
 
+    import_collection.children.link(objects_collection)
+
     if settings.import_decals:
         if len(decals_collection.objects) <= 0:
             bpy.data.collections.remove(decals_collection)
@@ -1129,12 +1144,13 @@ def import_object(map_object: MapObject, target_collection: bpy.types.Collection
 
             instance_data = map_object.data["PerInstanceSMData"]
 
-            bpy.ops.object.empty_add(type='PLAIN_AXES')
-            instance_group = bpy.context.active_object
-            instance_group.name = map_object.name + "-GRP"
+            # bpy.ops.object.empty_add(type='PLAIN_AXES')
+            # instance_group = bpy.context.active_object
+            instance_group=bpy.data.objects.new(map_object.name + "-GRP", None)
+            # instance_group.name = map_object.name + "-GRP"
 
             link(instance_group)
-            scene_unlink(instance_group)
+            # scene_unlink(instance_group)
 
             master_object.parent = instance_group
 
@@ -1270,7 +1286,7 @@ def import_map(yina, kena):
 
         import_umap(settings=settings, umap_data=umap_data, umap_name=umap_name)
         remove_master_objects()
-        clean_materials() # remove_duplicate_mats() 
+        # clean_materials() # remove_duplicate_mats() 
         clear_duplicate_node_groups()
 
         # if not settings.debug:
