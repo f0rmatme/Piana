@@ -1,10 +1,12 @@
 import addon_utils
 import bpy
-from .ui.config import Config
+# from .config import Config
 from .ui.funcs import *
 from .mods.anims import *
 from .mods.liana_main import *
 from .utils.common import setup_logger
+from .config import Config
+
 import webbrowser
 import time
 
@@ -27,10 +29,11 @@ class ImportMap(bpy.types.Operator):
     bl_label = "Import Map"
 
     def execute(self, context):
-        yina = context.scene.yina
-        kena = context.scene.kena
+        # yina = context.scene.yina
+        # kena = context.scene.kena
         start = time.perf_counter()
-        import_map(yina, kena)
+        addon_prefs = context.preferences.addons[__package__].preferences
+        import_map(addon_prefs)
         end = time.perf_counter()
         logger.info(f"Import time:{end-start}")
         return {'FINISHED'}
@@ -41,8 +44,8 @@ class LoadSettingsOperator(bpy.types.Operator):
     bl_label = "LoadSettings"
 
     def execute(self, context):
-        sc = context.scene
-        Config().load(sc.kena.exportPath)
+        addon_prefs = context.preferences.addons[__package__].preferences
+        Config().load(addon_prefs.exportPath)
         return {'FINISHED'}
 
 
@@ -51,24 +54,25 @@ class SaveSettingsOperator(bpy.types.Operator):
     bl_label = "SaveSettings"
 
     def execute(self, context):
-        sc = context.scene
-        Config().dump(sc.kena.exportPath)
+        addon_prefs = context.preferences.addons[__package__].preferences
+
+        Config().dump(addon_prefs.exportPath)
         return {'FINISHED'}
 
 
-class FindValorantPaks(bpy.types.Operator):
-    bl_idname = "object.findvalorant"
-    bl_label = "FindValorant"
+# class FindValorantPaks(bpy.types.Operator):
+#     bl_idname = "object.findvalorant"
+#     bl_label = "FindValorant"
 
-    def execute(self, context):
-        sc = context.scene
+#     def execute(self, context):
+#         sc = context.scene
 
-        path = search_for_valorant()
+#         path = search_for_valorant()
 
-        sc.kena.paksPath = Path(path).joinpath("ShooterGame").joinpath("Content").joinpath("Paks").__str__()
-        logger.info("Paks path changed to: {}".format(sc.kena.paksPath))
+#         sc.kena.paksPath = Path(path).joinpath("ShooterGame").joinpath("Content").joinpath("Paks").__str__()
+#         logger.info("Paks path changed to: {}".format(sc.kena.paksPath))
 
-        return {'FINISHED'}
+#         return {'FINISHED'}
 
 
 # ANCHOR Animations
@@ -245,13 +249,14 @@ class PIANA_OT_OpenUModel(bpy.types.Operator):
 
     def execute(self, context):
         sc = context.scene
-
+        
+        addon_prefs = context.preferences.addons[__package__].preferences
         addon_path = Path(bpy.utils.user_resource('SCRIPTS')).joinpath('addons', __package__)
         umodel_path = addon_path.joinpath("tools", "umodel_scaling.exe").__str__()
 
         subprocess.Popen(
             [umodel_path,
-             f"-path={sc.kena.paksPath}",
+             f"-path={addon_prefs.paksPath}",
              f"-game=valorant",
              f"-aes=0x4BE71AF2459CF83899EC9DC2CB60E22AC4B3047E0211034BBABE9D174C069DD6"]
         )

@@ -67,9 +67,9 @@ def get_object_type(model_data: dict) -> str:
 
     if model_data["Type"] in meshes:
         return "mesh"
-    elif model_data["Type"] in lights:
+    if model_data["Type"] in lights:
         return "light"
-    elif model_data["Type"] in decals:
+    if model_data["Type"] in decals:
         return "decal"
 
 

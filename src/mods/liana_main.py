@@ -15,11 +15,24 @@ object_types = []
 
 SELECTIVE_OBJECTS = []
 SELECTIVE_UMAP = [
-    # "Bonsai_Art_A",
-    # "Bonsai_Art_AtkPathA",
-    # "Bonsai_Art_AtkPathB",
-    # "Bonsai_Art_AtkSpawn",
-    # "Bonsai_Art_ATower",
+    # "Ascent_Art_A",
+    # "Ascent_Art_APathMid",
+    # "Ascent_Art_Atk",
+    # "Ascent_Art_AtkPathA",
+    # "Ascent_Art_AtkPathB",
+    # "Ascent_Art_B",
+    # "Ascent_Art_Def",
+    # "Ascent_Art_DefPathA",
+    # "Ascent_Art_DefPathB",
+    # "Ascent_Art_Env_VFX",
+    # "Ascent_Art_Mid",
+    # "Ascent_Art_Vista",
+    # "Ascent_Art_VistaA",
+    # "Ascent_Art_VistaAtk",
+    # "Ascent_Art_VistaB",
+    # "Ascent_Art_VistaDef",
+    # "Ascent_Gameplay",
+    # "Ascent_Lighting"
 ]
 BLACKLIST = [
     "navmesh",
@@ -28,7 +41,8 @@ BLACKLIST = [
     "WindStreaks_Plane",
     "SM_Port_Snowflakes_BoundMesh",
     "sm_barrierduality",
-    "box_for_volumes"
+    "box_for_volumes",
+    # "lightBlocker2"
 ]
 
 COUNT = 0
@@ -36,19 +50,20 @@ COUNT = 0
 
 # TODO DELETE THESE
 
-SCAPV = []
-STAPV = []
-TPV = []
-BPO = {}
-VPV = []
-RPV = []
-mat_types = []
+ScalarParameterValues = []
+StaticParameterValues = []
+TextureParameterValues = []
+BasePropertyOverrides = {}
+VectorParameterValues = []
+OtherTypes = []
+MaterialTypes = []
+
 PROPS = {
-    "ScalarParameterValues": SCAPV,
-    "Static": STAPV,
-    "TextureParameterValues": TPV,
-    "BasePropertyOverrides": BPO,
-    "Vector": VPV,
+    "ScalarParameterValues": ScalarParameterValues,
+    "Static": StaticParameterValues,
+    "TextureParameterValues": TextureParameterValues,
+    "BasePropertyOverrides": BasePropertyOverrides,
+    "Vector": VectorParameterValues,
 }
 object_types = []
 stdout = StringIO()
@@ -104,7 +119,7 @@ def search_object(map_object, index, link) -> bpy.types.Object:
     obj = bpy.data.objects.get(map_object.name)
     if obj:
         logger.info(f"[{index}] | Duplicate : {shorten_path(map_object.model_path, 4)} - {map_object.uname}")
-        master_object = obj.copy()# duplicate(obj, data=False)
+        master_object = obj.copy()  # duplicate(obj, data=False)
         master_object.name = map_object.uname
         reset_properties(master_object)
         return master_object
@@ -428,7 +443,7 @@ def set_material(settings: Settings, mat: bpy.types.Material, mat_data: dict, ov
         "BaseOpacity_RGB_Env_MAT"
     ]
 
-    mat_types.append(mat_type)
+    MaterialTypes.append(mat_type)
 
     nodes_textures = get_textures(settings=settings, mat=mat, override=override, mat_props=mat_props)
 
@@ -534,10 +549,10 @@ def set_material(settings: Settings, mat: bpy.types.Material, mat_data: dict, ov
 
             # -----------------------------------------------
             # LOGGING
-            if prop_name not in BPO:
-                BPO[prop_name] = []
-            BPO[prop_name].append(mat_props["BasePropertyOverrides"][prop_name])
-            BPO[prop_name] = list(dict.fromkeys(BPO[prop_name]))
+            if prop_name not in BasePropertyOverrides:
+                BasePropertyOverrides[prop_name] = []
+            BasePropertyOverrides[prop_name].append(mat_props["BasePropertyOverrides"][prop_name])
+            BasePropertyOverrides[prop_name] = list(dict.fromkeys(BasePropertyOverrides[prop_name]))
 
     if "StaticParameters" in mat_props:
         if "StaticSwitchParameters" in mat_props["StaticParameters"]:
@@ -581,7 +596,7 @@ def set_material(settings: Settings, mat: bpy.types.Material, mat_data: dict, ov
                         pass
                         # logger.warning("No input named 'Use Alpha as Emissive' found in shader '{}'".format(N_SHADER.name))
                 # LOGGING
-                STAPV.append(param['ParameterInfo']['Name'].lower())
+                StaticParameterValues.append(param['ParameterInfo']['Name'].lower())
 
         if "StaticComponentMaskParameters" in mat_props["StaticParameters"]:
             for param in mat_props["StaticParameters"]["StaticComponentMaskParameters"]:
@@ -615,7 +630,7 @@ def set_material(settings: Settings, mat: bpy.types.Material, mat_data: dict, ov
                 N_SHADER.inputs["Normal Strength"].default_value = param["ParameterValue"]
 
             # LOGGING
-            SCAPV.append(param_name)
+            ScalarParameterValues.append(param_name)
 
     if "VectorParameterValues" in mat_props:
         color_pos_x = -700
@@ -661,7 +676,7 @@ def set_material(settings: Settings, mat: bpy.types.Material, mat_data: dict, ov
             if "layer b tint" in param_name:
                 if "Tint B" in N_SHADER.inputs:
                     N_SHADER.inputs["Tint B"].default_value = get_rgb(param_value)
-            VPV.append(param['ParameterInfo']['Name'].lower())
+            VectorParameterValues.append(param['ParameterInfo']['Name'].lower())
 
     # --------------------------------------------
     # Set up material using the datas
@@ -876,7 +891,7 @@ def get_textures(settings: Settings, mat: bpy.types.Material, override: bool, ma
                     else:
                         nodes_texture[param_name] = tex_image_node
                         # LOGGING
-                    TPV.append(param['ParameterInfo']['Name'].lower())
+                    TextureParameterValues.append(param['ParameterInfo']['Name'].lower())
 
     if "CachedReferencedTextures" in mat_props:
         # print(mat_props)
@@ -918,7 +933,7 @@ def get_textures(settings: Settings, mat: bpy.types.Material, override: bool, ma
                         else:
                             nodes_texture[texture_name_raw] = tex_image_node
 
-                        TPV.append(texture_name_raw.lower())
+                        TextureParameterValues.append(texture_name_raw.lower())
 
     return nodes_texture
 # !SECTION
@@ -959,7 +974,7 @@ def filter_objects(umap_DATA, lights: bool = False) -> list:
 
     def is_blacklisted(object_name: str) -> bool:
         for blocked in BLACKLIST:
-            if blocked.lower() in object_name:
+            if blocked.lower() in object_name.lower():
                 return True
         return False
 
@@ -977,19 +992,22 @@ def filter_objects(umap_DATA, lights: bool = False) -> list:
 
 def import_umap(settings: Settings, umap_data: dict, umap_name: str):
     logger.info(f"Processing : {umap_name}")
+    # main_scene = bpy.data.scenes["Scene"]
+
+
     main_scene = bpy.data.scenes["Scene"]
+    map_collection = bpy.data.collections.new(settings.selected_map.name.capitalize())
+    main_scene.collection.children.link(map_collection)
+
     import_collection = bpy.data.collections.new(umap_name)
-    main_scene.collection.children.link(import_collection)
+    map_collection.children.link(import_collection)
 
     objectsToImport = filter_objects(umap_data)
-    objects_collection = bpy.data.collections.new(umap_name + "_objects")
+    decals_collection = bpy.data.collections.new(umap_name + "_Decals")
+    lights_collection = bpy.data.collections.new(umap_name + "_Lights")
 
-    if settings.import_decals:
-        decals_collection = bpy.data.collections.new(umap_name + "_decals")
-        import_collection.children.link(decals_collection)
-    if settings.import_lights:
-        lights_collection = bpy.data.collections.new(umap_name + "_lights")
-        import_collection.children.link(lights_collection)
+    import_collection.children.link(decals_collection)
+    import_collection.children.link(lights_collection)
 
     # import_collection.children.link(objects_collection)
 
@@ -1002,15 +1020,13 @@ def import_umap(settings: Settings, umap_data: dict, umap_name: str):
 
         if object_type == "mesh":
             if "Lighting" not in umap_name:
+                pass
 
                 map_object = MapObject(settings=settings, data=object_data, umap_name=umap_name)
-                imported_object = import_object(map_object=map_object, target_collection=objects_collection, object_index=objectIndex, scene=main_scene)
+                imported_object = import_object(map_object=map_object, target_collection=import_collection, object_index=objectIndex)
                 set_materials(settings=settings, byo=imported_object, map_object=map_object)
 
-                # objects_collection.objects.link(imported_object)
-                # clc.objects.unlink(imported_object)
-
-        elif object_type == "decal" and settings.import_decals:
+        if object_type == "decal" and settings.import_decals:
 
             if "DecalSize" in object_data["Properties"]:
                 size = object_data["Properties"]["DecalSize"]
@@ -1027,29 +1043,28 @@ def import_umap(settings: Settings, umap_data: dict, umap_name: str):
             decals_collection.objects.link(decal_object)
             main_scene.collection.objects.unlink(decal_object)
 
-        elif object_type == "light" and settings.import_lights:
+        if object_type == "light" and settings.import_lights:
             # Set variables
             light_type = get_light_type(object_data)
             light_name = object_data["Outer"]
             light_props = object_data["Properties"]
 
-            if settings.logging:
-                logger.info(f"[{objectIndex}] | Lighting : {light_name}")
+            logger.info(f"[{objectIndex}] | Lighting : {light_name}")
 
             light_data = bpy.data.lights.new(name=light_name, type=light_type)
             light_object = bpy.data.objects.new(name=light_name, object_data=light_data)
             lights_collection.objects.link(light_object)
 
             for prop_name, prop_value in light_props.items():
-                RPV.append(prop_name)
+                OtherTypes.append(prop_name)
 
                 if "Intensity" == prop_name:
                     if light_type == "POINT":
-                        light_object.data.energy = prop_value * 0.001
+                        light_object.data.energy = prop_value * 10
                     if light_type == "AREA":
-                        light_object.data.energy = prop_value * 1
+                        light_object.data.energy = prop_value * 10
                     if light_type == "SPOT":
-                        light_object.data.energy = prop_value * 0.001
+                        light_object.data.energy = prop_value * 10
                 if "LightColor" == prop_name:
                     light_object.data.color = get_rgb_255(prop_value)[:-1]
                 if "SourceRadius" == prop_name:
@@ -1073,17 +1088,12 @@ def import_umap(settings: Settings, umap_data: dict, umap_name: str):
 
                 set_properties(byo=light_object, object=light_props, is_light=True)
 
-    import_collection.children.link(objects_collection)
-
-    if settings.import_decals:
-        if len(decals_collection.objects) <= 0:
-            bpy.data.collections.remove(decals_collection)
-    if settings.import_lights:
-        if len(lights_collection.objects) <= 0:
-            bpy.data.collections.remove(lights_collection)
-    if len(objects_collection.objects) <= 0:
-        bpy.data.collections.remove(objects_collection)
-    # blender.eliminate_materials()
+    if len(decals_collection.objects) <= 0:
+        bpy.data.collections.remove(decals_collection)
+    if len(lights_collection.objects) <= 0:
+        bpy.data.collections.remove(lights_collection)
+    # if len(import_collection.objects) <= 0:
+    #     bpy.data.collections.remove(import_collection)
 
     if not settings.debug:
         with redirect_stdout(stdout):
@@ -1102,7 +1112,8 @@ def import_umap(settings: Settings, umap_data: dict, umap_name: str):
             logger.info(f"Saved : {umap_name}.blend to {shorten_path(map_path.__str__(), 4)}")
 
 
-def import_object(map_object: MapObject, target_collection: bpy.types.Collection, object_index: int, scene: bpy.types.Scene):
+def import_object(map_object: MapObject, target_collection: bpy.types.Collection, object_index: int):
+    scene = bpy.data.scenes["Scene"]
 
     link = target_collection.objects.link
     scene_unlink = scene.collection.objects.unlink
@@ -1146,7 +1157,7 @@ def import_object(map_object: MapObject, target_collection: bpy.types.Collection
 
             # bpy.ops.object.empty_add(type='PLAIN_AXES')
             # instance_group = bpy.context.active_object
-            instance_group=bpy.data.objects.new(map_object.name + "-GRP", None)
+            instance_group = bpy.data.objects.new(map_object.name + "-GRP", None)
             # instance_group.name = map_object.name + "-GRP"
 
             link(instance_group)
@@ -1174,7 +1185,6 @@ def import_object(map_object: MapObject, target_collection: bpy.types.Collection
             master_object.hide_render = True
 
         else:
-            # pass
             master_object.hide_viewport = False
             master_object.hide_render = False
 
@@ -1241,21 +1251,15 @@ def post_setup(settings: Settings):
 
 # ANCHOR MAIN FUNCTION
 
-def import_map(yina, kena):
+def import_map(addon_prefs):
     """
     Main function
     Args:
         settings (dict): Settings to use
     """
 
-    # global logger
-
     os.system("cls")
-
-    settings = Settings(yina, kena)
-    # if SELECTIVE_UMAP:
-
-    # logger = setup_logger(settings.log)
+    settings = Settings(addon_prefs)
 
     #  Check if the game files are exported
     extract_assets(settings)
@@ -1275,6 +1279,9 @@ def import_map(yina, kena):
         for umap in SELECTIVE_UMAP:
             umap_json_paths.append(settings.selected_map.umaps_path.joinpath(f"{umap}.json"))
 
+
+
+    # Process each umaps
     umap_json_path: Path
     for umap_json_path in umap_json_paths:
 
@@ -1286,30 +1293,29 @@ def import_map(yina, kena):
 
         import_umap(settings=settings, umap_data=umap_data, umap_name=umap_name)
         remove_master_objects()
-        # clean_materials() # remove_duplicate_mats() 
         clear_duplicate_node_groups()
+    
+    
 
-        # if not settings.debug:
-        #     bpy.context.window.workspace = bpy.data.workspaces['Layout']
-
-        # Final
+    # Final
     if settings.debug:
         PROPS = {
-            "ScalarParameterValues": list(dict.fromkeys(SCAPV)),
-            "StaticParameterValues": list(dict.fromkeys(STAPV)),
-            "TextureParameterValues": list(dict.fromkeys(TPV)),
-            "BasePropertyOverrides": BPO,
-            "VectorParameterValues": list(dict.fromkeys(VPV)),
-            "MaterialTypes": list(dict.fromkeys(mat_types)),
-            "Others": list(dict.fromkeys(RPV))
+
+            "ScalarParameterValues": list(dict.fromkeys(ScalarParameterValues)),
+            "StaticParameterValues": list(dict.fromkeys(StaticParameterValues)),
+            "TextureParameterValues": list(dict.fromkeys(TextureParameterValues)),
+            "BasePropertyOverrides": BasePropertyOverrides,
+            "VectorParameterValues": list(dict.fromkeys(VectorParameterValues)),
+            "MaterialTypes": list(dict.fromkeys(MaterialTypes)),
+            "OtherTypes": list(dict.fromkeys(OtherTypes))
         }
 
         save_json(settings.selected_map.folder_path.joinpath("props.json"), PROPS)
-        save_json(settings.selected_map.folder_path.joinpath("mat_types.json"), list(dict.fromkeys(mat_types)))
+        save_json(settings.selected_map.folder_path.joinpath("MaterialTypes.json"), list(dict.fromkeys(MaterialTypes)))
         save_json(settings.selected_map.folder_path.joinpath("object_types.json"), list(dict.fromkeys(flatten_list(object_types))))
 
     else:
         post_setup(settings)
-        # open_folder(settings.selected_map.scenes_path.__str__())
+        open_folder(settings.selected_map.scenes_path.__str__())
 
     logger.info("Finished!")

@@ -1,6 +1,6 @@
 from setuptools import setup
-from .ui.props import MapImporterSettings, ValorantSettings
-from .ui.config import Config
+# from .ui.props import MapImporterSettings
+# from .config import Config
 from .ui.funcs import *
 import bpy
 import os
@@ -48,22 +48,30 @@ class VIEW3D_PT_Piana(bpy.types.Panel):
     bl_idname = "PIANA_PT_panel"
     bl_label = "Settings"
 
+    
+
     def draw(self, context):
         layout = self.layout
-        yina = context.scene.yina
-        kena = context.scene.kena
+        # yina = context.scene.yina
+        # kena = context.scene.kena
+        addon_prefs = context.preferences.addons[__package__].preferences
 
         main_column = layout.column()
         s_column_1 = main_column.column(align=False)
         # s_column_1.operator("object.findvalorant", icon='VIEWZOOM', text="Find game path")
 
         s_column_1.label(text="Export Folder")
-        s_column_1.prop(kena, "exportPath", text="")
+        s_column_1.prop(addon_prefs, "exportPath", text="")
 
-        s_column_1.operator("object.savesettings", icon='OPTIONS', text="Save Settings")
+        
 
         s_column_1.label(text="PAKs Folder")
-        s_column_1.prop(kena, "paksPath", text="")
+        s_column_1.prop(addon_prefs, "paksPath", text="")
+        
+        s_column_1.prop(addon_prefs, "debug", text="Debug Mode")
+
+        s_column_1.separator()
+        s_column_1.operator("object.savesettings", icon='OPTIONS', text="Save Settings")
 
 
 class VIEW3D_PT_MapImporter(bpy.types.Panel):
@@ -73,31 +81,54 @@ class VIEW3D_PT_MapImporter(bpy.types.Panel):
     bl_category = "Piana"
     bl_idname = "PIANA_PT_Piana"
     bl_label = "Map Importer"
+    bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
         layout = self.layout
-        yina = context.scene.yina
-        kena = context.scene.kena
+        scene = context.scene
+        addon_prefs = context.preferences.addons[__package__].preferences
 
         main_column = layout.column()
 
-        if kena.paths:
+        if addon_prefs.paths:
 
             s_column_2 = main_column.column()
             s_column_2.label(text="Map :")
-            s_column_2.prop(yina, "selectedMap", text="")
+            s_column_2.prop(addon_prefs, "selectedMap", text="")
+
+            # if addon_prefs.selectedMap != "":
+            #     # umap_list = get_umap_list(context=context, map_name=addon_prefs.selectedMap)
+
+
+            #     s_column_2.template_list("MY_UL_List", "The_List", addon_prefs,
+            #                     "selectedMapUmaps", scene, "list_index")
+
+                # s_column_2.operator('my_list.new_item', text='NEW')
+                # row.operator('my_list.delete_item', text='REMOVE')
+                # row.operator('my_list.move_item', text='UP').direction = 'UP'
+                # row.operator('my_list.move_item', text='DOWN').direction = 'DOWN'
+
+                # if scene.list_index >= 0 and scene.my_list:
+                #     item = scene.my_list[scene.list_index]
+                #     row = layout.row()
+                #     row.prop(item, "name")
+                #     row.prop(item, "random_prop")
+                # for i in umap_list:
+                #     scene.my_list.add()
+                    # row = layout.row()
+
 
             s_column_2.separator()
-            s_column_2.prop(yina, "importDecals", text="Import Decals")
-            s_column_2.prop(yina, "importLights", text="Import Lights")
-            s_column_2.prop(yina, "combineUmaps", text="Combine UMAPs")
+            s_column_2.prop(addon_prefs, "importDecals", text="Import Decals")
+            s_column_2.prop(addon_prefs, "importLights", text="Import Lights")
+            s_column_2.prop(addon_prefs, "combineUmaps", text="Combine UMAPs")
 
-            if yina.combineUmaps:
+            if addon_prefs.combineUmaps:
                 s_column_2.label(text="Combine Method :")
-                s_column_2.prop(yina, "combineMethod", text="")
+                s_column_2.prop(addon_prefs, "combineMethod", text="")
 
             s_column_2.label(text="Textures :")
-            s_column_2.prop(yina, "textureControl", text="")
+            s_column_2.prop(addon_prefs, "textureControl", text="")
 
             s_column_2.separator()
 
@@ -113,11 +144,10 @@ class VIEW3D_PT_Animation(bpy.types.Panel):
     bl_category = "Piana"
     bl_idname = "PIANA_PT_animation_panel"
     bl_label = "Animation Tools"
+    bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
         layout = self.layout
-        yina = context.scene.yina
-        kena = context.scene.kena
 
         r1 = layout.row()
         r1.operator("val.ubbutton", icon='SORT_DESC', text="UB Setup")
@@ -135,17 +165,19 @@ class VIEW3D_PT_Others(bpy.types.Panel):
     bl_region_type = "UI"
     bl_category = "Piana"
     bl_idname = "PIANA_PT_Others"
-    bl_label = "Other Tools"
+    bl_label = "Other"
+    # bl_options = {}
+
+
 
     def draw(self, context):
         layout = self.layout
-        yina = context.scene.yina
-        kena = context.scene.kena
+        addon_prefs = context.preferences.addons[__package__].preferences
 
         scene = context.scene
 
         layout.operator("piana.support", icon='FUND', text="Donate", text_ctxt="Donate")
-        if kena.paths:
+        if addon_prefs.paths:
             layout.operator("piana.runumodel", icon='SCRIPT', text="Start UModel")
             # layout.label(text="Custom UModel")
             # layout.prop(kena, "exportPath", text="")
@@ -155,18 +187,23 @@ class VIEW3D_PT_Others(bpy.types.Panel):
 # ANCHOR: Register
 # --------------------------
 
+# Don't need these anymore
 
-def register():
-    bpy.types.Scene.kena = bpy.props.PointerProperty(type=ValorantSettings)
-    bpy.types.Scene.yina = bpy.props.PointerProperty(type=MapImporterSettings)
-    # os.system("cls")
-
-
-def unregister():
-    sc = bpy.types.Scene
-    del sc.yina
-    del sc.kena
+# def register():
+#     # os.system("cls")
+#     pass
+# #     # bpy.types.Scene.kena = bpy.props.PointerProperty(type=ValorantSettings)
+# #     # bpy.types.Scene.yina = bpy.props.PointerProperty(type=MapImporterSettings)
+# #     # os.system("cls")
 
 
-if __name__ == "__main__":
-    register()
+# # def unregister():
+# #     sc = bpy.types.Scene
+# #     # del sc.yina
+
+
+# if __name__ == "__main__":
+#     # os.system("cls")
+#     # print("---------------------------------------------------------------")
+
+#     register()

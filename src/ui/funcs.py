@@ -8,6 +8,9 @@ from ..utils.common import setup_logger
 # def setup_logger(logfile: str) -> logging.Logger:
 # logger = logging.getLogger("LV")
 
+def get_umap_list(context, map_name) -> list:
+    maps_data = requests.get("https://gist.githubusercontent.com/luvyana/d5d7b2be0d33f9d213067f06ec681bd8/raw/cd34145908eb2e936065d10f3b9b570c7d5c7353/umaps.json").json()
+    return maps_data[map_name]
 
 logger = setup_logger(__name__)
 

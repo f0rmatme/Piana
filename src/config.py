@@ -12,7 +12,6 @@ class MyEncoder(JSONEncoder):
 
 
 class Config:
-    Documentation: str = "https://github.com/Amrsatrio/BlenderUmap/blob/master/README.md"   # Change this later
     ExportPath: str
     PaksPath: str
     ImportDecals: bool
@@ -24,26 +23,31 @@ class Config:
 
     def __init__(self) -> None:
         sc = bpy.context.scene
-        ys = sc.yina
-        ks = sc.kena
-        self.ExportPath = ks.exportPath
-        self.PaksPath = ks.paksPath
-        self.ImportDecals = ys.importDecals
-        self.ImportLights = ys.importLights
-        self.CombineUmaps = ys.combineUmaps
-        self.CombineMethod = ys.combineMethod
-        self.TextureControl = ys.textureControl
-        self.SelectedMap = ys.selectedMap
+        # ys = sc.yina
+        # ks = sc.kena
+        addon_prefs = bpy.context.preferences.addons[__package__].preferences
+
+        self.ExportPath = addon_prefs.exportPath
+        self.PaksPath = addon_prefs.paksPath
+        self.ImportDecals = addon_prefs.importDecals
+        self.ImportLights = addon_prefs.importLights
+        self.CombineUmaps = addon_prefs.combineUmaps
+        self.CombineMethod = addon_prefs.combineMethod
+        self.TextureControl = addon_prefs.textureControl
+        self.SelectedMap = addon_prefs.selectedMap
+        self.Debug = addon_prefs.debug
 
     def to_dict(self) -> dict:
-        result: dict = {"Documentation": self.Documentation,
+        result: dict = {
                         "PaksPath": self.PaksPath,
                         "ImportDecals": self.ImportDecals,
                         "ImportLights": self.ImportLights,
                         "CombineUmaps": self.CombineUmaps,
                         "CombineMethod": self.CombineMethod,
                         "TextureControl": self.TextureControl,
-                        "SelectedMap": self.SelectedMap}
+                        "SelectedMap": self.SelectedMap,
+                        "Debug": self.Debug
+                        }
 
         return result
 
@@ -55,16 +59,16 @@ class Config:
             if out is None:
                 out = data
 
-        sc = bpy.context.scene
-        ys = sc.yina
-        ks = sc.kena
-        ks.paksPath = data["PaksPath"]
-        ys.importDecals = data["ImportDecals"]
-        ys.importLights = data["ImportLights"]
-        ys.combineUmaps = data["CombineUmaps"]
-        ys.combineMethod = data["CombineMethod"]
-        ys.textureControl = data["TextureControl"]
-        ys.selectedMap = data["SelectedMap"]
+        addon_prefs = bpy.context.preferences.addons[__package__].preferences
+
+        addon_prefs.paksPath = data["PaksPath"]
+        addon_prefs.importDecals = data["ImportDecals"]
+        addon_prefs.importLights = data["ImportLights"]
+        addon_prefs.combineUmaps = data["CombineUmaps"]
+        addon_prefs.combineMethod = data["CombineMethod"]
+        addon_prefs.textureControl = data["TextureControl"]
+        addon_prefs.selectedMap = data["SelectedMap"]
+        addon_prefs.debug = data["Debug"]
 
     def dump(self, path):
         with open(os.path.join(path, "config.json"), "w") as f:

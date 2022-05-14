@@ -166,21 +166,22 @@ def get_umap_list() -> list:
 
 
 class Settings:
-    def __init__(self, yina, kena):
+    def __init__(self, addon_prefs):
+        
 
         self.aes = "0x4BE71AF2459CF83899EC9DC2CB60E22AC4B3047E0211034BBABE9D174C069DD6"
         self.texture_format = ".png"
-        self.script_root = Path(yina.scriptPath).parent
+        self.script_root = Path(addon_prefs.scriptPath)
         self.tools_path = self.script_root.joinpath("tools")
         self.importer_assets_path = self.script_root.joinpath("assets")
         # self.game_path = Path(settings.gamePath)
-        self.paks_path = Path(kena.paksPath)
-        self.import_decals = yina.importDecals
-        self.import_lights = yina.importLights
-        self.combine_umaps = yina.combineUmaps
-        self.combine_method = yina.combineMethod
-        self.textures = yina.textureControl
-        self.export_path = Path(kena.exportPath)
+        self.paks_path = Path(addon_prefs.paksPath)
+        self.import_decals = addon_prefs.importDecals
+        self.import_lights = addon_prefs.importLights
+        self.combine_umaps = addon_prefs.combineUmaps
+        self.combine_method = addon_prefs.combineMethod
+        self.textures = addon_prefs.textureControl
+        self.export_path = Path(addon_prefs.exportPath)
         self.assets_path = self.export_path.joinpath("export")
         self.maps_path = self.export_path.joinpath("maps")
         self.umodel = self.script_root.joinpath("tools", "umodel.exe")
@@ -188,14 +189,9 @@ class Settings:
         self.log = self.export_path.joinpath("import.log")
         self.umap_list_path = self.importer_assets_path.joinpath("umaps.json")
         self.umap_list = read_json(self.umap_list_path)
+        self.debug = addon_prefs.debug
         
-
-        # print(self.script_root.__str__())
-
-        self.selected_map = Map(yina.selectedMap, self.maps_path, self.umap_list)
-
-        # TODO - Add these to UI?
-        self.debug = False
+        self.selected_map = Map(addon_prefs.selectedMap, self.maps_path, self.umap_list)
 
         self.shaders = [
             "VALORANT_Base",
