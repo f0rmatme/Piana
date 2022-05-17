@@ -190,6 +190,8 @@ class Settings:
         self.umap_list_path = self.importer_assets_path.joinpath("umaps.json")
         self.umap_list = read_json(self.umap_list_path)
         self.debug = addon_prefs.debug
+        self.use_perfpatch = addon_prefs.usePerfPatch
+        self.dll_path = self.tools_path.joinpath("BlenderPerfPatch.dll")
         
         self.selected_map = Map(addon_prefs.selectedMap, self.maps_path, self.umap_list)
 
