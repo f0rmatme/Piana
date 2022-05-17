@@ -12,6 +12,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 from . import auto_load
+import bpy
 bl_info = {
     "name": "Piana",
     "author": "Luviana",
@@ -30,7 +31,8 @@ auto_load.init()
 
 def register():
     auto_load.register()
-
+    addon_prefs = bpy.context.preferences.addons[__package__].preferences
+    addon_prefs.isInjected = False
 
 def unregister():
     auto_load.unregister()
