@@ -1262,11 +1262,9 @@ def import_map(addon_prefs):
     os.system("cls")
     settings = Settings(addon_prefs)
 
-    if not addon_prefs.isInjected:
+    if (not addon_prefs.isInjected) and addon_prefs.usePerfPatch:
         inject_dll(os.getpid(), settings.dll_path.__str__())
         addon_prefs.isInjected = True
-    else:
-        logger.info("DLL is already injected")
     
     #  Check if the game files are exported
     extract_assets(settings)
