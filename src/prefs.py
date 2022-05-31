@@ -133,7 +133,6 @@ class ExampleAddonPreferences(AddonPreferences):
         items=get_map_list()
     )
 
-
     scriptPath: bpy.props.StringProperty(
         name='Script Path',
         default=os.path.dirname(os.path.abspath(__file__)),
@@ -141,6 +140,17 @@ class ExampleAddonPreferences(AddonPreferences):
         subtype='DIR_PATH'
     )
 
+    usePerfPatch: bpy.props.BoolProperty(
+        name='Use PerfPatch',
+        default=False,
+        description="Use BlenderPerfPatch"
+    )
+
+    isInjected: bpy.props.BoolProperty(
+        name='Is Injected',
+        default=False,
+        description="IsDLLInjected"
+    )
 
     # TODO : Create a list to control which umaps to import
     # selectedMapUmaps: bpy.props.CollectionProperty(

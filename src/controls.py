@@ -70,6 +70,10 @@ class VIEW3D_PT_Piana(bpy.types.Panel):
         
         s_column_1.prop(addon_prefs, "debug", text="Debug Mode")
 
+        row = s_column_1.row()
+        row.prop(addon_prefs, "usePerfPatch", text="Use PerfPatch")
+        row.enabled = not addon_prefs.isInjected
+
         s_column_1.separator()
         s_column_1.operator("object.savesettings", icon='OPTIONS', text="Save Settings")
 
