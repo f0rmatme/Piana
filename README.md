@@ -44,6 +44,9 @@ Before you download the addon, you must download these first.
 
 - Now you can import maps however you want.
 
+- **Debug Mode** : It will disable the save features, and also export some useful .json files.
+- **Use PerfPatch** : It'll inject [BlenderPerfPatch](https://wiki.modme.co/wiki/apps/Blender-Perf-Patch.html) to boost the import speed.
+
 
 # ✍️ Contributing & Support
 
