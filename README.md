@@ -28,6 +28,7 @@ Before you download the addon, you must download these first.
 
 * [.NET 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) - Download the "Windows - Installer x64"
 * [Blender 3.1+](https://www.blender.org/download/) - Update your Blender if it's not 3.1
+* At least **30+ gb of empty space.** (SSD will be faster.)
 
 
 ## 🔧 Installation & Usage
