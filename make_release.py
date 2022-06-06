@@ -7,7 +7,7 @@ import sys
 
 
 addon_name = "Piana"
-addon_version = sys.argv[1]
+addon_version = "v1.0.0"
 addon_filename = addon_name + "-" + addon_version
 
 
