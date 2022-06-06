@@ -63,7 +63,7 @@ Before you download the addon, you must download these first.
 
 ## Contact 
 * Twitter : [@ogulcantokar](https://twitter.com/ogulcantokar)
-* Discord : [Join my Discord](discord.gg/ianas)
+* Discord : [Join my Discord](https://discord.gg/ianas)
 
 
 
