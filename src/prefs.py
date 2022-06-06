@@ -143,7 +143,7 @@ class ExampleAddonPreferences(AddonPreferences):
     usePerfPatch: bpy.props.BoolProperty(
         name='Use PerfPatch',
         default=False,
-        description="Use BlenderPerfPatch"
+        description="Huge speed-up, but use it with caution. A restart is recommended after."
     )
 
     isInjected: bpy.props.BoolProperty(
@@ -151,19 +151,6 @@ class ExampleAddonPreferences(AddonPreferences):
         default=False,
         description="IsDLLInjected"
     )
-
-    # TODO : Create a list to control which umaps to import
-    # selectedMapUmaps: bpy.props.CollectionProperty(
-    #     name='Selected Map Umaps',
-    #     default="pack",
-    #     items=
-    #     [
-    #         ('pack', 'Pack', 'Packs the textures to the .blend file.', '', 0),
-    #     ]
-    # )
-    
-
-
 
 
     def draw(self, context):
