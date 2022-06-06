@@ -9,7 +9,7 @@
 
   <p align="center">
     <br />
-    <a href="discord.gg/ianas">Join our Discord Server</a>
+    <a href="https://discord.gg/ianas">Join our Discord Server</a>
     ·
     <a href="https://github.com/luvyana/Piana/issues">Request Feature & Report a Bug</a>
   </p>
@@ -31,7 +31,7 @@ Before you download the addon, you must download these first.
 
 
 ## 🔧 Installation & Usage
-- **[Click here to download the latest version of the addon](https://github.com/luvyana/Piana/releases)**
+- **[Click here to download the latest version of the addon](https://github.com/luvyana/Piana/releases/latest)**
 - Open Blender, go to Edit > Preferences > find Piana > Enable it
 - Inside Piana's UI, go to Settings
    ```js
