@@ -11,7 +11,8 @@ logger = setup_logger(__name__)
 
 
 def get_map_list():
-    maps_data = requests.get("https://gist.githubusercontent.com/luvyana/d5d7b2be0d33f9d213067f06ec681bd8/raw/cd34145908eb2e936065d10f3b9b570c7d5c7353/umaps.json").json()
+    maps_data = requests.get(
+        "https://gist.githubusercontent.com/luvyana/d5d7b2be0d33f9d213067f06ec681bd8/raw/cd34145908eb2e936065d10f3b9b570c7d5c7353/umaps.json").json()
 
     maps: list = []
     name: str
@@ -24,6 +25,7 @@ def get_map_list():
 
     return maps
 
+
 def update_paks_path(self, context):
     addon_prefs = context.preferences.addons[__package__].preferences
 
@@ -32,11 +34,11 @@ def update_paks_path(self, context):
     else:
         addon_prefs.paths = False
 
+
 class PianaPreferences(AddonPreferences):
     # this must match the add-on name, use '__package__'
     # when defining this in a submodule of a python package.
     bl_idname = __package__
-
 
     debug: bpy.props.BoolProperty(
         name='Debug',
@@ -46,7 +48,7 @@ class PianaPreferences(AddonPreferences):
 
     paksPath: bpy.props.StringProperty(
         name='Paks Path',
-        # default="",
+        default="",
         description="Path to your paks folder",
         subtype='DIR_PATH',
         update=update_paks_path,
@@ -54,8 +56,7 @@ class PianaPreferences(AddonPreferences):
 
     exportPath: bpy.props.StringProperty(
         name='Export Path',
-        # CBA with this.
-        default="D:\_valorant\\",
+        default="",
         description="Path to your export folder",
         subtype='DIR_PATH',
     )
@@ -132,10 +133,9 @@ class PianaPreferences(AddonPreferences):
         description="IsDLLInjected"
     )
 
-
     def draw(self, context):
         layout = self.layout
-        
+
         main_column = layout.column()
         s_column_1 = main_column.column(align=False)
 
