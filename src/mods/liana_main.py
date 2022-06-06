@@ -1,16 +1,24 @@
+import sys
+import os
+import subprocess
+import bpy
+
 from contextlib import redirect_stdout
 from sys import stdout
+from io import StringIO
+
 from .liana.helpers import *
 from .liana.blender import *
 from .liana.valorant import *
 from .liana.importer_xay import *
-from ..tools.injector import inject_dll
-import os
-import subprocess
-import bpy
-from io import StringIO
 
 logger = setup_logger(__name__)
+
+try:
+    sys.dont_write_bytecode=True
+    from ..tools.injector import inject_dll
+except:
+    pass
 
 object_types = []
 
@@ -71,7 +79,6 @@ stdout = StringIO()
 
 
 def extract_assets(settings: Settings):
-    pass
 
     # Check if everything is exported from uModel
     if settings.assets_path.joinpath("exported.yo").exists():
@@ -101,8 +108,6 @@ def extract_assets(settings: Settings):
 
 
 def extract_data(settings: Settings, export_directory: str, asset_list_txt: str = ""):
-
-    # print("--game-umaps", settings.umap_list_path.__str__())
 
     args = [settings.cue4extractor.__str__(),
             "--game-directory", settings.paks_path.__str__(),

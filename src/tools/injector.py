@@ -1,5 +1,8 @@
+import sys
 from ctypes import windll, c_void_p, WinError
 from ctypes.wintypes import HANDLE, LPCVOID, DWORD, HMODULE, LPCSTR, LPDWORD
+
+sys.dont_write_bytecode = True
 
 kernel32 = windll.kernel32
 PVOID = LPVOID = ULONG_PTR = c_void_p
