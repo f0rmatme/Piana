@@ -1,7 +1,6 @@
 import os
 import re
 import requests
-import logging
 from pathlib import Path
 from ..utils.common import setup_logger
 

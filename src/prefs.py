@@ -1,12 +1,6 @@
-from bpy.props import StringProperty, IntProperty, BoolProperty
-from bpy.types import Operator, AddonPreferences
-
-from pathlib import Path
-
+from bpy.types import AddonPreferences
 from .utils.common import setup_logger
-
-from .ui.funcs import has_paks, get_umap_list
-from .config import Config
+from .ui.funcs import has_paks
 
 
 import bpy
@@ -30,8 +24,6 @@ def get_map_list():
 
     return maps
 
-
-
 def update_paks_path(self, context):
     addon_prefs = context.preferences.addons[__package__].preferences
 
@@ -40,18 +32,7 @@ def update_paks_path(self, context):
     else:
         addon_prefs.paths = False
 
-def update_export_path(self, context):
-    addon_prefs = context.preferences.addons[__package__].preferences
-
-    export_path = Path(addon_prefs.exportPath)
-    export_path_config = export_path.joinpath("config.json")
-
-    if export_path_config.exists():
-        Config().load(export_path_config)
-    else:
-        addon_prefs.paksPath = ""
-
-class ExampleAddonPreferences(AddonPreferences):
+class PianaPreferences(AddonPreferences):
     # this must match the add-on name, use '__package__'
     # when defining this in a submodule of a python package.
     bl_idname = __package__
@@ -77,7 +58,6 @@ class ExampleAddonPreferences(AddonPreferences):
         default="D:\_valorant\\",
         description="Path to your export folder",
         subtype='DIR_PATH',
-        update=update_export_path,
     )
 
     paths: bpy.props.BoolProperty(

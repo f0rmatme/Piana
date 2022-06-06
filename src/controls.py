@@ -1,9 +1,4 @@
 import bpy
-import os
-
-from setuptools import setup
-from pathlib import Path
-
 from .ui.funcs import *
 
 
@@ -47,10 +42,6 @@ class VIEW3D_PT_Piana(bpy.types.Panel):
         row.prop(addon_prefs, "usePerfPatch", text="Use PerfPatch")
         row.enabled = not addon_prefs.isInjected
 
-        s_column_1.separator()
-        s_column_1.operator("object.savesettings", icon='OPTIONS', text="Save Settings")
-
-
 class VIEW3D_PT_MapImporter(bpy.types.Panel):
     """Creates a Panel in Properties(N)"""
     bl_space_type = "VIEW_3D"
@@ -93,7 +84,6 @@ class VIEW3D_PT_MapImporter(bpy.types.Panel):
             colL.scale_y = 1.25
             colL.operator("object.import_map", icon='IMPORT', text="Import Map!")
 
-
 class VIEW3D_PT_Animation(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -114,7 +104,6 @@ class VIEW3D_PT_Animation(bpy.types.Panel):
         ehe.operator("val.twistfix", text="Twist Fix")
         ehe.operator("val.facefix", text="Face Fix")
         layout.label(text="Credits : twitter/r4tasan")
-
 
 class VIEW3D_PT_Others(bpy.types.Panel):
     bl_space_type = "VIEW_3D"

@@ -24,7 +24,7 @@ bl_info = {
     "category": "Import-Export",
     "support": "COMMUNITY",
     "doc_url": "https://github.com/luvyana/Piana",
-    "tracker_url": "discord.gg/ianas",
+    "tracker_url": "https://discord.gg/ianas",
 }
 
 
