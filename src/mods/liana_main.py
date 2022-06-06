@@ -578,6 +578,10 @@ def set_material(settings: Settings, mat: bpy.types.Material, mat_data: dict, ov
                     mat_switches.append(param_name)
                     N_SHADER.inputs["Invert Alpha"].default_value = 1
 
+                if "use min light brightness color" in param_name and "Use MLB Color" in N_SHADER.inputs:
+                    if param["Value"]:
+                        N_SHADER.inputs["Use MLB Color"].default_value = 1
+
                 if "use vertex color" in param_name:
                     if obj_data.vertex_colors:
                         mat_switches.append(param_name)
