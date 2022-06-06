@@ -132,32 +132,12 @@ namespace cue4extractor
         {
             writer.WriteStartObject();
 
-            /*
-            var f = value.Data[0];
-            var firstAlpha = f.A;
-            bool bAlphaFullBlackOrWhite = (firstAlpha == 0xFF || firstAlpha == 0x00);
-            if (bAlphaFullBlackOrWhite)
-                bAlphaFullBlackOrWhite = value.Data.Skip(1).All(col => col.A == firstAlpha);
-
-            var firstRGB = (f.R, f.G, f.B);
-            bool bRGBFullBlackOrWhite = (firstRGB == (0xFF, 0xFF, 0xFF) || firstRGB == (0x00, 0x00, 0x00));
-            if (bRGBFullBlackOrWhite)
-                bRGBFullBlackOrWhite = value.Data.Skip(1).All(col => (col.R, col.G, col.B) == firstRGB);
-            */
-
             writer.WritePropertyName("Data");
             // serializer.Serialize(writer, value.Data); // saving space and time by only writing as hex
             writer.WriteStartArray();
             foreach (var c in value.Data)
                 writer.WriteValue(UnsafePrint.BytesToHex(c.R, c.G, c.B, c.A)); // we need alpha even if it's 1 or 0...
             writer.WriteEndArray();
-
-            /*
-            writer.WritePropertyName("bAlphaFullBlackOrWhite");
-            writer.WriteValue(bAlphaFullBlackOrWhite);
-            writer.WritePropertyName("bRGBFullBlackOrWhite");
-            writer.WriteValue(bRGBFullBlackOrWhite);
-            */
 
             writer.WritePropertyName("Stride");
             writer.WriteValue(value.Stride);
