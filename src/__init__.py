@@ -16,13 +16,15 @@ import bpy
 bl_info = {
     "name": "Piana",
     "author": "Luviana",
-    "description": "",
-    "blender": (3, 0, 0),
+    "description": "Tools & Scripts for creating VALORANT Content Creation",
+    "blender": (3, 00, 0),
     "version": (1, 0, 0),
     "location": "3D View > Tools",
     "warning": "",
     "category": "Import-Export",
     "support": "COMMUNITY",
+    "doc_url": "https://github.com/luvyana/Piana",
+    "tracker_url": "discord.gg/ianas",
 }
 
 
@@ -33,6 +35,7 @@ def register():
     auto_load.register()
     addon_prefs = bpy.context.preferences.addons[__package__].preferences
     addon_prefs.isInjected = False
+
 
 def unregister():
     auto_load.unregister()

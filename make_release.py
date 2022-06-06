@@ -61,9 +61,9 @@ def main():
     # Remove unwanted files
     remove(os.path.join(build_folder, "tools", "cue4extractor"))
     remove(os.path.join(build_folder, ".vscode"))
-    remove(os.path.join(build_folder, "tools", "VALORANT_Agent_LV.blend"))
-    remove(os.path.join(build_folder, "tools", "VALORANT_Agent.blend"))
-    remove(os.path.join(build_folder, "tools", "VALORANT_Agent_Weapon.blend"))
+    remove(os.path.join(build_folder, "assets", "VALORANT_Agent_LV.blend"))
+    remove(os.path.join(build_folder, "assets", "VALORANT_Agent.blend"))
+    remove(os.path.join(build_folder, "assets", "VALORANT_Agent_Weapon.blend"))
 
     shutil.make_archive(
         base_name=addon_filename,
